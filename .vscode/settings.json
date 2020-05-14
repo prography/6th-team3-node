@@ -1,0 +1,5 @@
+{
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "typescript.format.enable": true
+}
