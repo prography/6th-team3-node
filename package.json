@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node ./dist",
     "start:dev": "nodemon",
-    "test": "jest"
+    "test": "NODE_ENV=test jest"
   },
   "devDependencies": {
     "@prisma/cli": "^2.0.0-beta.5",

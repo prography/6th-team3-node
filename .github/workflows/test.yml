@@ -5,9 +5,9 @@ name: Node Server Test
 
 on:
   push:
-    branches: [ master, develop, release/* ]
+    branches: [master, develop, release/*]
   pull_request:
-    branches: [ master, develop ]
+    branches: [master, develop]
 
 jobs:
   test:
@@ -17,15 +17,22 @@ jobs:
         node-version: [12.x]
 
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-      
-    - name: Package Installation
-      run: yarn install
-    
-    - name: Project Test
-      run: yarn test
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Package Installation
+        run: yarn install
+
+      - name: Project Test
+        run: yarn test
+        env:
+          HOST: ${{ secrets.HOST }}
+          PORT: ${{ secrets.PORT }}
+          DATABASE_URI: ${{ secrets.DATABASE_URI }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}

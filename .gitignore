@@ -2,4 +2,5 @@
 .env
 .env.dev
 .env.prod
+.env.test
 /dist
