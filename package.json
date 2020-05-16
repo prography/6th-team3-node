@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node ./dist",
+    "start": "node ./dist",
     "start:dev": "nodemon",
     "test": "jest"
   },
