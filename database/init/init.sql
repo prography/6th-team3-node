@@ -1,0 +1,6 @@
+CREATE SCHEMA
+IF NOT EXISTS `petmiliy` DEFAULT CHARACTER
+SET utf8 ;
+
+USE `petmily`
+;
