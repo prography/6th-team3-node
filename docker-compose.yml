@@ -13,7 +13,7 @@ services:
     # 컨테이너 실행시에 환경변수 사용
     environment:
       MYSQL_PASSWORD: dogdog1234!
-      MYSQL_DATABASE: petmiliy
+      MYSQL_DATABASE: petmily
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: dogdog1234!
     # 재시작하는 조건
@@ -24,6 +24,9 @@ services:
       # Access denied
       - --default-authentication-plugin=mysql_native_password
     restart: on-failure
+    volumes:
+      # - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/conf.d:/etc/mysql/conf.d
     # 네트워크 설정
     networks:
       default:
@@ -34,11 +37,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: on-failure
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules # Remove this if you have pure JS dependencies
     ports:
       - 5000:3000
+    links:
+      - database
     depends_on:
       - database
     # 기본적으로 써있는 CMD나 ENTRYPOINT에 덮어쓸 내용
