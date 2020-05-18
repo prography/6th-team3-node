@@ -676,7 +676,7 @@
     "@types/bson" "*"
     "@types/node" "*"
 
-"@types/mysql@^2.15.11", "@types/mysql@^2.15.5":
+"@types/mysql@^2.15.5":
   version "2.15.11"
   resolved "https://registry.yarnpkg.com/@types/mysql/-/mysql-2.15.11.tgz#94ecfed1236f72903872a1ec924c681c0e186383"
   integrity sha512-8fpdwdOKdmLgbnwVqPtYJGiCOLaxIsjx36zWYtP9b29M0644MSiZJNC54AaCNLbtsAKXcj2uJUlQh/bYjUkwaw==
@@ -4979,7 +4979,7 @@ mute-stream@0.0.8:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-mysql@^2.16.0, mysql@^2.18.1:
+mysql@^2.16.0:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/mysql/-/mysql-2.18.1.tgz#2254143855c5a8c73825e4522baf2ea021766717"
   integrity sha512-Bca+gk2YWmqp2Uf6k5NFEurwY/0td0cpebAucFpY/3jhrwrVGuxU2uQFCHjU19SJfje0yQvi+rVWdq78hR5lig==
