@@ -190,6 +190,139 @@
       "value": "\"hotel\""
     },
     {
+      "tag": "CreateEnum",
+      "enum": "Provider",
+      "values": [
+        "KAKAO",
+        "NAVER",
+        "GOOGLE",
+        "FACEBOOK"
+      ]
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Enum",
+          "enum": "Provider"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Enum",
+          "enum": "Provider"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"provider\""
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "KAKAO"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "KAKAO"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"kakao\""
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "NAVER"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "NAVER"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"naver\""
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "GOOGLE"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "GOOGLE"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"google\""
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "FACEBOOK"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "EnumValue",
+          "enum": "Provider",
+          "value": "FACEBOOK"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"facebook\""
+    },
+    {
       "tag": "CreateSource",
       "source": "mysql"
     },
@@ -320,7 +453,7 @@
       "model": "Hotel",
       "field": "updatedAt",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -363,7 +496,7 @@
       "model": "Hotel",
       "field": "name",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -381,14 +514,14 @@
       "model": "Hotel",
       "field": "description",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Hotel",
       "field": "address",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
@@ -434,21 +567,21 @@
       "model": "Hotel",
       "field": "latitude",
       "type": "Float",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Hotel",
       "field": "longitude",
       "type": "Float",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Hotel",
       "field": "weekOpenTime",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -480,7 +613,7 @@
       "model": "Hotel",
       "field": "weekCloseTime",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -640,7 +773,7 @@
       "model": "Hotel",
       "field": "weekPrice",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -736,7 +869,7 @@
       "model": "Hotel",
       "field": "phoneNumber",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -832,7 +965,7 @@
       "model": "Hotel",
       "field": "maxDogSize",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -864,7 +997,7 @@
       "model": "Hotel",
       "field": "pageLink",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1012,7 +1145,7 @@
       "model": "Monitoring",
       "field": "hotelId",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1101,7 +1234,7 @@
       "model": "Monitoring",
       "field": "updatedAt",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1144,25 +1277,14 @@
       "model": "Monitoring",
       "field": "name",
       "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Monitoring",
-          "field": "name"
-        },
-        "directive": "unique"
-      }
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Monitoring",
       "field": "hotel",
       "type": "Hotel",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1278,7 +1400,7 @@
       "model": "Service",
       "field": "hotelId",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1367,7 +1489,7 @@
       "model": "Service",
       "field": "updatedAt",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1410,7 +1532,7 @@
       "model": "Service",
       "field": "name",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1428,7 +1550,7 @@
       "model": "Service",
       "field": "hotel",
       "type": "Hotel",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1601,7 +1723,7 @@
       "model": "Photo",
       "field": "updatedAt",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1644,21 +1766,21 @@
       "model": "Photo",
       "field": "url",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Photo",
       "field": "target",
       "type": "Target",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Photo",
       "field": "targetId",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1817,7 +1939,7 @@
       "model": "User",
       "field": "updatedAt",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1860,7 +1982,7 @@
       "model": "User",
       "field": "name",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1878,21 +2000,103 @@
       "model": "User",
       "field": "email",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "email"
+        },
+        "directive": "unique"
+      }
     },
     {
       "tag": "CreateField",
       "model": "User",
       "field": "password",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "provider",
+      "type": "Provider",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "accessToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "accessToken"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "accessToken"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"access_token\""
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "refreshToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "refreshToken"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "refreshToken"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"refresh_token\""
     },
     {
       "tag": "CreateField",
       "model": "User",
       "field": "phoneNumber",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -2033,7 +2237,7 @@
       "model": "Pet",
       "field": "userId",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -2122,7 +2326,7 @@
       "model": "Pet",
       "field": "updatedAt",
       "type": "DateTime",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -2165,21 +2369,21 @@
       "model": "Pet",
       "field": "name",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Pet",
       "field": "year",
       "type": "Int",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Pet",
       "field": "registerNum",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -2211,7 +2415,7 @@
       "model": "Pet",
       "field": "rfidCd",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -2243,14 +2447,14 @@
       "model": "Pet",
       "field": "breed",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Pet",
       "field": "isNeutered",
       "type": "Boolean",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -2282,14 +2486,14 @@
       "model": "Pet",
       "field": "gender",
       "type": "Gender",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Pet",
       "field": "owner",
       "type": "User",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
