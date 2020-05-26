@@ -34,8 +34,11 @@ const config = {
     prefix: '/api',
   },
   auth: {
-    kakaoKey: process.env.KAKAO_REST_API_KEY,
-    kakaoRedirect: process.env.KAKAO_REDIRECT,
+    kakao: {
+      restApiKey: process.env.KAKAO_REST_API_KEY,
+      clientId: process.env.KAKAO_CLIENT_ID,
+      redirect: process.env.KAKAO_REDIRECT,
+    },
   },
 };
 
