@@ -1,5 +1,5 @@
 datasource mysql {
-  url      = env("DATABASE_URL")
+  url = "***"
   provider = "mysql"
 }
 
@@ -56,7 +56,7 @@ model Service {
   hotelId   Int      @map("hotel_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @map("updated_at") @updatedAt
-  name      String
+  name      String   @unique
   hotel     Hotel    @relation(fields: [hotelId], references: [id])
 
   @@map("hotel_services")
