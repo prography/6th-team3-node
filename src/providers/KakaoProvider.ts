@@ -9,7 +9,6 @@ export interface UserToken {
 }
 
 export interface UserInfo {
-  id: number;
   nickname: string;
   profileImage: string;
   email: string;
@@ -69,7 +68,6 @@ export class KakaoProvider extends BaseProvider {
         //TODO: Error 처리하기
         const bodyData = JSON.parse(res.body);
         const response: UserInfo = {
-          id: bodyData['id'],
           nickname: bodyData['properties']['nickname'],
           profileImage: bodyData['properties']['profile_image'],
           email: bodyData['kakao_account']['email'],

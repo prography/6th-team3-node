@@ -39,6 +39,7 @@ const config = {
       clientId: process.env.KAKAO_CLIENT_ID,
       redirect: process.env.KAKAO_REDIRECT,
     },
+    jwt: process.env.JWT_SECRET_KEY || 'secret',
   },
 };
 

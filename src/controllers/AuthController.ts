@@ -1,5 +1,4 @@
 import { BaseController } from './BaseController';
-import { PrismaClient } from '@prisma/client';
 import {
   JsonController,
   Get,
@@ -7,19 +6,29 @@ import {
   QueryParam,
   Redirect,
 } from 'routing-controllers';
-import {} from '../utils/AuthHelper';
+import { signJwtToken } from '../utils/AuthHelper';
 import config from '../config';
 import { UserInfo, KakaoProvider } from '../providers/KakaoProvider';
 import { UserService } from '../services/UserService';
-import { AlreadySignedUserError } from '../errors/UserError';
+import { User } from '@prisma/client';
+// import { AlreadySignedUserError } from '../errors/UserError';
 
 // import config from '../config';
 
 export interface KakaoAuthResponse {
   status: string;
+  message: string;
   data: {
-    provider: string;
+    userId: number;
     information: UserInfo;
+  };
+}
+
+export interface JwtSignInResponse {
+  status: string;
+  message: string;
+  data: {
+    token: string;
   };
 }
 
@@ -54,20 +63,36 @@ export class AuthController extends BaseController {
     console.log(58, code);
     const userToken = await kakaoProvider.getAccessToken(code);
     const userInfo = await kakaoProvider.getUserInfo(userToken);
-    // 만약 이메일 조회했는데 해당 이메일로 가입된 유저가 있다? -> 가입된 유저라고 클라로 리턴보내기
-    const checkSigned = await this.userService.findUser(userInfo.email);
-    if (checkSigned) throw new AlreadySignedUserError(userInfo.email);
+    const checkUser = await this.userService.findUser(userInfo.email);
+    if (checkUser) {
+      // 만약 이메일 조회했는데 해당 이메일로 가입된 유저가 있다? -> JWT 리턴, 가입된 유저라고 클라로 리턴보내기
+      // throw new AlreadySignedUserError(userInfo.email);
+      const token = signJwtToken(checkUser);
+      const response: JwtSignInResponse = {
+        status: 'success',
+        message: 'Success Kakao Login',
+        data: {
+          token,
+        },
+      };
+      return response;
+    }
+
     // 만약 이메일 조회했는데 해당 이메일로 가입된 유저가 없다?
     // -> OK, 카카오에서 받아온 정보들 클라()로 리턴
-    const newUser = await this.userService.firstCreate(
+
+    // TODO: firstCreate 실패시 에러처리
+    const newUser: User = await this.userService.createUser(
       userInfo,
       userToken,
       'KAKAO'
     );
+
     const response: KakaoAuthResponse = {
       status: 'success',
+      message: 'Success Kakao Authorization, Redirect To Sign In Page',
       data: {
-        provider: 'kakao',
+        userId: newUser.id,
         information: userInfo,
       },
     };
