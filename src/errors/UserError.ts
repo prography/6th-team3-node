@@ -1,5 +1,5 @@
 // 이미 회원 가입된 이메일로 다시 회원가입을 신청하려고 할 때(409 Conflict)
-import { HttpError } from 'routing-controllers';
+import { HttpError, NotFoundError } from 'routing-controllers';
 import { ErrorResponse } from '../errors/BaseError';
 
 export class AlreadySignedUserError extends HttpError {
@@ -13,7 +13,23 @@ export class AlreadySignedUserError extends HttpError {
   public toJSON(): ErrorResponse {
     return {
       error: this.message,
-      message: `Please Recheck signed e-mail ${this.userEmail}`,
+      message: `Please recheck signed e-mail ${this.userEmail}`,
+    };
+  }
+}
+
+export class UserNotFoundError extends NotFoundError {
+  private userEmail: string;
+  constructor(userEmail: string) {
+    super('User Not Found');
+    this.userEmail = userEmail;
+    Object.setPrototypeOf(this, UserNotFoundError.prototype);
+  }
+
+  public toJSON(): ErrorResponse {
+    return {
+      error: this.message,
+      message: `Please recheck e-mail or sign up ${this.userEmail} account`,
     };
   }
 }

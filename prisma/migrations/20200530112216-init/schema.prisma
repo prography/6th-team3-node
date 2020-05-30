@@ -78,7 +78,7 @@ model User {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime? @map("updated_at") @updatedAt
   name           String?   @unique
-  email          String?   @unique
+  email          String    @unique
   password       String?
   provider       Provider?
   accessToken    String?   @map("access_token")

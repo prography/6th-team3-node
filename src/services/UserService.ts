@@ -44,7 +44,7 @@ export class UserService extends BaseService {
     return result;
   }
 
-  public async findUser(email: string) {
+  public async findUserByEmail(email: string) {
     const result = await this.databaseClient.user.findOne({
       where: { email },
     });

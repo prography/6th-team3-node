@@ -1,6 +1,15 @@
 import { BaseController } from './BaseController';
-import { signJwtToken } from '../utils/AuthHelper';
-import { JsonController, Get, Post, Body } from 'routing-controllers';
+import { UserNotFoundError } from '../errors/UserError';
+
+import jwtMiddleware, { signJwtToken, JwtUserData } from '../utils/AuthHelper';
+import {
+  JsonController,
+  Get,
+  Post,
+  Body,
+  UseBefore,
+  BodyParam,
+} from 'routing-controllers';
 import { UserService } from '../services/UserService';
 
 export interface SignUpData {
@@ -8,6 +17,14 @@ export interface SignUpData {
   phoneNumber: string;
   profileImage: string;
   password?: string;
+}
+
+export interface UserData {
+  id: number;
+  name: string;
+  nickname: string;
+  phoneNumber: string;
+  // profileImage: string;
 }
 
 export interface SignUpRequest {
@@ -32,10 +49,27 @@ export class UserController extends BaseController {
   }
 
   @Get()
-  public index() {
-    return 'Hello! This is user👱🏻‍♀️ page';
+  @UseBefore(jwtMiddleware)
+  public async index(@BodyParam('user') user: JwtUserData) {
+    //TODO: header로 온 JWT validation
+    // const jwtData = decodeJwtToken(authToken);
+    const userData = await this.userService.findUserByEmail(user.email);
+    if (!userData) throw new UserNotFoundError(user.email);
+    console.log(48, userData);
+
+    //TODO: profile photo logic 구현하기
+    const response: UserData = {
+      id: userData.id,
+      name: userData.name!,
+      nickname: userData.name!,
+      phoneNumber: userData.phoneNumber!,
+      // profileImage:
+    };
+    return response;
   }
-  //TODO: 닉네임 중복확인
+
+  //TODO: 닉네임 중복확인, PUT/PATCH으로 처리해야하나?
+  //TODO: signUpData에 모든 정보가 들어왔는지 Validation check
   @Post('/')
   public async createUser(@Body() signUpData: string) {
     // TODO: signUpData validation check
@@ -46,7 +80,7 @@ export class UserController extends BaseController {
     if (!signUpUser) {
       //TODO: Database error handling
     }
-    const token = signJwtToken(signUpUser);
+    const token = signJwtToken(signUpUser.id, signUpUser.email);
     const response: JwtSignUpResponse = {
       status: 'success',
       message: 'Success New User Creation',

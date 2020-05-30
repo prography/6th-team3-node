@@ -2000,7 +2000,7 @@
       "model": "User",
       "field": "email",
       "type": "String",
-      "arity": "Optional"
+      "arity": "Required"
     },
     {
       "tag": "CreateDirective",

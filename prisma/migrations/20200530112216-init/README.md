@@ -1,19 +1,20 @@
-# Migration `20200526193953-init`
+# Migration `20200530112216-init`
 
-This migration has been generated at 5/26/2020, 7:39:53 PM.
+This migration has been generated at 5/30/2020, 11:22:16 AM.
 You can check out the [state of the schema](./schema.prisma) after the migration.
 
 ## Database Steps
 
 ```sql
-ALTER TABLE `petmily`.`user` CHANGE provider provider ENUM('kakao', 'naver', 'google', 'facebook')
+ALTER TABLE `petmily`.`user` DROP COLUMN `email`,
+ADD COLUMN `email` varchar(191) NOT NULL  ;
 ```
 
 ## Changes
 
 ```diff
 diff --git schema.prisma schema.prisma
-migration ..20200526193953-init
+migration ..20200530112216-init
 --- datamodel.dml
 +++ datamodel.dml
 @@ -1,0 +1,132 @@
@@ -97,7 +98,7 @@ migration ..20200526193953-init
 +  createdAt      DateTime  @default(now()) @map("created_at")
 +  updatedAt      DateTime? @map("updated_at") @updatedAt
 +  name           String?   @unique
-+  email          String?   @unique
++  email          String    @unique
 +  password       String?
 +  provider       Provider?
 +  accessToken    String?   @map("access_token")
