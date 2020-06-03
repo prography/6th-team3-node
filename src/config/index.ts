@@ -40,6 +40,7 @@ const config = {
       redirect: process.env.KAKAO_REDIRECT,
     },
     jwt: process.env.JWT_SECRET_KEY || 'secret',
+    openApi: process.env.OPEN_API_KEY,
   },
 };
 

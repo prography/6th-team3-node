@@ -1,0 +1,42 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "Pet",
+      "field": "rfidCode",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Pet",
+          "field": "rfidCode"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Pet",
+          "field": "rfidCode"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"rfid_cd\""
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Pet",
+      "field": "rfidCd"
+    }
+  ]
+}
