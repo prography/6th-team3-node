@@ -1,8 +1,12 @@
 // Database 접근하기
 import { BaseService } from './BaseService';
 import { PrismaClient } from '@prisma/client';
-import { SignUpData } from '../controllers/UserController';
+import {
+  OauthSignUpData,
+  GeneralSignUpData,
+} from '../controllers/UserController';
 import { UserToken, UserInfo } from '../providers/KakaoProvider';
+import { hashPassword } from '../utils/AuthHelper';
 
 type Provider = 'KAKAO' | 'NAVER' | 'GOOGLE' | 'FACEBOOK';
 
@@ -14,7 +18,22 @@ export class UserService extends BaseService {
     this.databaseClient = new PrismaClient();
   }
 
-  public async createUser(
+  public async createGeneralUser(signUpData: GeneralSignUpData) {
+    const { nickname, phoneNumber, email, password } = signUpData;
+    const safePassword = await hashPassword(password);
+    console.log(password, safePassword);
+    const result = await this.databaseClient.user.create({
+      data: {
+        name: nickname,
+        phoneNumber: phoneNumber,
+        email: email,
+        password: safePassword,
+      },
+    });
+    return result;
+  }
+
+  public async createOauthUser(
     userInfo: UserInfo,
     userToken: UserToken,
     provider: Provider
@@ -31,13 +50,12 @@ export class UserService extends BaseService {
     return result;
   }
 
-  public async updateSignUpData(userId: number, signUpData: SignUpData) {
+  public async updateSignUpData(userId: number, signUpData: OauthSignUpData) {
     const result = await this.databaseClient.user.update({
       where: { id: userId },
       data: {
         name: signUpData.nickname,
         phoneNumber: signUpData.phoneNumber,
-        password: signUpData.password,
       },
     });
     console.log(44, result);
@@ -48,7 +66,6 @@ export class UserService extends BaseService {
     const result = await this.databaseClient.user.findOne({
       where: { email },
     });
-    console.log(39, result);
     return result;
   }
 }

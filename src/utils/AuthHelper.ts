@@ -1,8 +1,8 @@
+import bcryptjs from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import express from 'express';
 // import { User } from '@prisma/client';
 import config from '../config';
-import { User } from '@prisma/client';
 
 export interface JwtData {
   id: number;
@@ -16,6 +16,15 @@ export interface JwtUserData {
   email: string;
 }
 
+export async function hashPassword(password: string) {
+  const salt = await bcryptjs.genSalt(10);
+  const hash = await bcryptjs.hash(password, salt);
+  return hash;
+}
+
+export async function checkPassword(password: string, hashPassword: string) {
+  return await bcryptjs.compare(password, hashPassword);
+}
 //TODO: 함수 이름 바꾸기
 export function signJwtToken(id: number, email: string) {
   const payload = {

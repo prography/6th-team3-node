@@ -2,18 +2,19 @@ import { BaseController } from './BaseController';
 import {
   JsonController,
   Get,
+  Post,
   Param,
   QueryParam,
   Redirect,
+  BodyParam,
 } from 'routing-controllers';
-import { signJwtToken } from '../utils/AuthHelper';
+import { signJwtToken, checkPassword } from '../utils/AuthHelper';
 import config from '../config';
 import { UserInfo, KakaoProvider } from '../providers/KakaoProvider';
 import { UserService } from '../services/UserService';
 import { User } from '@prisma/client';
-// import { AlreadySignedUserError } from '../errors/UserError';
-
-// import config from '../config';
+import { UserNotFoundError } from '../errors/UserError';
+import { PasswordIncorrectError } from '../errors/AuthError';
 
 export interface KakaoAuthResponse {
   status: string;
@@ -40,6 +41,26 @@ export class AuthController extends BaseController {
     this.userService = new UserService();
   }
 
+  @Post('/login')
+  public async login(
+    @BodyParam('email') email: string,
+    @BodyParam('password') password: string
+  ) {
+    const user = await this.userService.findUserByEmail(email);
+    if (user === null) throw new UserNotFoundError(email);
+    const checkUser = await checkPassword(password, user.password!);
+    if (checkUser === false) throw new PasswordIncorrectError();
+    const token = signJwtToken(user.id!, user.email!);
+    const response: JwtSignInResponse = {
+      status: 'success',
+      message: 'Success Kakao Login',
+      data: {
+        token,
+      },
+    };
+    return response;
+  }
+
   @Get('/kakao/login')
   @Redirect(
     'https://kauth.kakao.com/oauth/authorize?client_id=:clientId&redirect_uri=:redirectUri&response_type=code'
@@ -63,11 +84,13 @@ export class AuthController extends BaseController {
     console.log(58, code);
     const userToken = await kakaoProvider.getAccessToken(code);
     const userInfo = await kakaoProvider.getUserInfo(userToken);
-    const checkUser = await this.userService.findUser(userInfo.email);
+    const checkUser = (await this.userService.findUserByEmail(
+      userInfo.email
+    )) as User;
     if (checkUser) {
       // 만약 이메일 조회했는데 해당 이메일로 가입된 유저가 있다? -> JWT 리턴, 가입된 유저라고 클라로 리턴보내기
       // throw new AlreadySignedUserError(userInfo.email);
-      const token = signJwtToken(checkUser);
+      const token = signJwtToken(checkUser.id!, checkUser.email!);
       const response: JwtSignInResponse = {
         status: 'success',
         message: 'Success Kakao Login',
@@ -79,10 +102,10 @@ export class AuthController extends BaseController {
     }
 
     // 만약 이메일 조회했는데 해당 이메일로 가입된 유저가 없다?
-    // -> OK, 카카오에서 받아온 정보들 클라()로 리턴
+    // -> OK, 카카오에서 받아온 정보들 클라로 리턴
 
     // TODO: firstCreate 실패시 에러처리
-    const newUser: User = await this.userService.createUser(
+    const newUser = await this.userService.createOauthUser(
       userInfo,
       userToken,
       'KAKAO'
