@@ -1,5 +1,5 @@
 datasource mysql {
-  url      = env("DATABASE_URL")
+  url = "***"
   provider = "mysql"
 }
 
@@ -19,13 +19,13 @@ model Hotel {
   zipcode          String?
   latitude         Float?
   longitude        Float?
-  weekOpenTime     String       @map("week_open_time")
-  weekCloseTime    String       @map("week_close_time")
-  satOpenTime      String?      @map("sat_open_time")
-  satCloseTime     String?      @map("sat_close_time")
-  sunOpenTime      String?      @map("sun_open_time")
-  sunCloseTime     String?      @map("sun_close_time")
-  weekPrice        Int          @map("week_price")
+  weekOpenTime     DateTime?    @map("week_open_time")
+  weekCloseTime    DateTime?    @map("week_close_time")
+  satOpenTime      DateTime?    @map("sat_open_time")
+  satCloseTime     DateTime?    @map("sat_close_time")
+  sunOpenTime      DateTime?    @map("sun_open_time")
+  sunCloseTime     DateTime?    @map("sun_close_time")
+  weekPrice        Int?         @map("week_price")
   satPrice         Int?         @map("sat_price")
   sunPrice         Int?         @map("sun_price")
   phoneNumber      String?      @map("phone_number")
@@ -33,9 +33,9 @@ model Hotel {
   isNeuteredOnly   Boolean?     @map("is_neutered_only")
   maxDogSize       Int?         @map("max_dog_size")
   pageLink         String?      @map("page_link")
-  monitorings      Monitoring[]?
-  services         Service[]?
-  customers        User[]?      @relation(references: [id])
+  monitorings      Monitoring[]
+  services         Service[]
+  customers        User[]       @relation(references: [id])
 
   @@map("hotel")
 }
