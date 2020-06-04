@@ -44,19 +44,19 @@ export class HotelController extends BaseController {
             ],
           },
         });
-      } else if (req.query.openquery || req.query.closequery) {
+      } else if (req.query.opentimequery || req.query.closetimequery) {
         hotels = await this.databaseClient.hotel.findMany({
           where: {
             //오픈, 클로즈 시간으로 검색할 때 사용
             AND: [
               {
                 weekOpenTime: {
-                  lte: req.query.openquery,
+                  lte: req.query.opentimequery,
                 },
               },
               {
                 weekCloseTime: {
-                  gte: req.query.closequery,
+                  gte: req.query.closetimequery,
                 },
               },
             ],
