@@ -474,10 +474,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@prisma/cli@^2.0.0-beta.5":
-  version "2.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0-beta.5.tgz#9116e9ba08131fce47bb96d9bc19e8a443a2b893"
-  integrity sha512-Kl3IqOq6sYdajnLA034SLJxFCB0IxXcrSLYR8W9XTOyt3RRP/TCUPp5yBVfO9B21Kwe9YrFujTbSD2qQaDg1QA==
+"@prisma/cli@^2.0.0-beta.8":
+  version "2.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0-beta.8.tgz#18356d5464040339c9c01cdf9a4241c1bccc5dea"
+  integrity sha512-l1bHUmPzjdOF87MzIkcE55AkGLDKV2apmS2D9ZuYM+7hWWMk7lcJjjquDr9RAtSDMN8nuvYQcXnFFg7JP4DUxw==
 
 "@prisma/client@^2.0.0-beta.5":
   version "2.0.0-beta.5"

@@ -19,13 +19,13 @@ model Hotel {
   zipcode          String?
   latitude         Float?
   longitude        Float?
-  weekOpenTime     DateTime?    @map("week_open_time")
-  weekCloseTime    DateTime?    @map("week_close_time")
-  satOpenTime      DateTime?    @map("sat_open_time")
-  satCloseTime     DateTime?    @map("sat_close_time")
-  sunOpenTime      DateTime?    @map("sun_open_time")
-  sunCloseTime     DateTime?    @map("sun_close_time")
-  weekPrice        Int?         @map("week_price")
+  weekOpenTime     String       @map("week_open_time")
+  weekCloseTime    String       @map("week_close_time")
+  satOpenTime      String?      @map("sat_open_time")
+  satCloseTime     String?      @map("sat_close_time")
+  sunOpenTime      String?      @map("sun_open_time")
+  sunCloseTime     String?      @map("sun_close_time")
+  weekPrice        Int          @map("week_price")
   satPrice         Int?         @map("sat_price")
   sunPrice         Int?         @map("sun_price")
   phoneNumber      String?      @map("phone_number")
@@ -42,22 +42,22 @@ model Hotel {
 
 model Monitoring {
   id        Int       @default(autoincrement()) @id
-  hotelId   Int?      @map("hotel_id")
+  hotelId   Int       @map("hotel_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @map("updated_at") @updatedAt
   name      String?
-  hotel     Hotel?    @relation(fields: [hotelId], references: [id])
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
 
   @@map("hotel_monitoring_type")
 }
 
 model Service {
   id        Int       @default(autoincrement()) @id
-  hotelId   Int?      @map("hotel_id")
+  hotelId   Int       @map("hotel_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @map("updated_at") @updatedAt
-  name      String?   @unique
-  hotel     Hotel?    @relation(fields: [hotelId], references: [id])
+  name      String?
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
 
   @@map("hotel_services")
 }

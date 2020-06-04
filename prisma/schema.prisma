@@ -33,31 +33,31 @@ model Hotel {
   isNeuteredOnly   Boolean?     @map("is_neutered_only")
   maxDogSize       Int?         @map("max_dog_size")
   pageLink         String?      @map("page_link")
-  monitorings      Monitoring[]?
-  services         Service[]?
-  customers        User[]?      @relation(references: [id])
+  monitorings      Monitoring[]
+  services         Service[]
+  customers        User[]       @relation(references: [id])
 
   @@map("hotel")
 }
 
 model Monitoring {
   id        Int       @default(autoincrement()) @id
-  hotelId   Int?      @map("hotel_id")
+  hotelId   Int       @map("hotel_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @map("updated_at") @updatedAt
   name      String?
-  hotel     Hotel?    @relation(fields: [hotelId], references: [id])
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
 
   @@map("hotel_monitoring_type")
 }
 
 model Service {
   id        Int       @default(autoincrement()) @id
-  hotelId   Int?      @map("hotel_id")
+  hotelId   Int       @map("hotel_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @map("updated_at") @updatedAt
-  name      String?   @unique
-  hotel     Hotel?    @relation(fields: [hotelId], references: [id])
+  name      String?
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
 
   @@map("hotel_services")
 }
