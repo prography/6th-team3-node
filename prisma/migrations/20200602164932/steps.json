@@ -1,0 +1,41 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "Hotel",
+      "field": "weekOpenTime",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Hotel",
+      "field": "weekCloseTime",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Hotel",
+      "field": "satOpenTime",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Hotel",
+      "field": "satCloseTime",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Hotel",
+      "field": "sunOpenTime",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Hotel",
+      "field": "sunCloseTime",
+      "type": "String"
+    }
+  ]
+}

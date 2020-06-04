@@ -10,6 +10,8 @@ services:
     # 포트 연결 설정
     ports:
       - 3306:3306
+    cap_add:
+      - SYS_NICE # CAP_SYS_NICE
     # 컨테이너 실행시에 환경변수 사용
     environment:
       MYSQL_PASSWORD: dogdog1234!
