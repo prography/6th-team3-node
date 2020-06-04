@@ -1,7 +1,8 @@
 // Database 접근하기
 import { BaseService } from './BaseService';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Gender } from '@prisma/client';
 import { PetData } from '../controllers/PetController';
+import { PetRegisterData } from '../providers/PetProvider';
 
 export class PetService extends BaseService {
   private databaseClient: PrismaClient;
@@ -11,16 +12,24 @@ export class PetService extends BaseService {
     this.databaseClient = new PrismaClient();
   }
 
-  public async createUserPet(userId: number, data: PetData) {
+  public async createUserPet(
+    userId: number,
+    data: PetData,
+    registerData: PetRegisterData
+  ) {
     const result = await this.databaseClient.pet.create({
       data: {
         name: data.petName,
-        registerNum: data.registerNumber,
+        registerNum: registerData.registerNumber,
+        rfidCode: registerData.rfidCode,
+        breed: registerData.breed,
+        isNeutered: registerData.isNeutered,
+        gender: registerData.gender as Gender,
         year: data.birthYear,
         owner: { connect: { id: userId } },
       },
     });
-    console.log(23, result);
+    console.log(32, result);
     return result;
   }
 }
