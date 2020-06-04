@@ -11,7 +11,6 @@ import {
   BodyParam,
 } from 'routing-controllers';
 import { UserService } from '../services/UserService';
-import { sign } from 'crypto';
 
 export interface OauthSignUpData {
   nickname: string;
@@ -37,7 +36,6 @@ export interface GeneralSignUpRequest {
 export interface UserData {
   id: number;
   name: string;
-  nickname: string;
   phoneNumber: string;
   // profileImage: string;
 }
@@ -50,6 +48,7 @@ export interface JwtSignUpResponse {
   };
 }
 
+//TODO: User 정보 수정(PUT) 그리고 탈퇴(DELETE) 구현
 @JsonController('/user')
 export class UserController extends BaseController {
   private userService: UserService;
@@ -58,7 +57,7 @@ export class UserController extends BaseController {
     this.userService = new UserService();
   }
 
-  @Get()
+  @Get('/')
   @UseBefore(jwtMiddleware)
   public async index(@BodyParam('user') user: JwtUserData) {
     //TODO: header로 온 JWT validation
@@ -71,7 +70,6 @@ export class UserController extends BaseController {
     const response: UserData = {
       id: userData.id,
       name: userData.name!,
-      nickname: userData.name!,
       phoneNumber: userData.phoneNumber!,
       // profileImage:
     };

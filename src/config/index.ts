@@ -41,6 +41,10 @@ const config = {
     },
     jwt: process.env.JWT_SECRET_KEY || 'secret',
     openApi: process.env.OPEN_API_KEY,
+    aws: {
+      accessKey: process.env.AWS_ACCESS_KEY,
+      secretKey: process.env.AWS_SECRET_KEY,
+    },
   },
 };
 

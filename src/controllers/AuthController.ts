@@ -12,7 +12,7 @@ import { signJwtToken, checkPassword } from '../utils/AuthHelper';
 import config from '../config';
 import { UserInfo, KakaoProvider } from '../providers/KakaoProvider';
 import { UserService } from '../services/UserService';
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 import { UserNotFoundError } from '../errors/UserError';
 import { PasswordIncorrectError } from '../errors/AuthError';
 
@@ -53,7 +53,7 @@ export class AuthController extends BaseController {
     const token = signJwtToken(user.id!, user.email!);
     const response: JwtSignInResponse = {
       status: 'success',
-      message: 'Success Kakao Login',
+      message: 'Success General Login',
       data: {
         token,
       },
@@ -84,9 +84,9 @@ export class AuthController extends BaseController {
     console.log(58, code);
     const userToken = await kakaoProvider.getAccessToken(code);
     const userInfo = await kakaoProvider.getUserInfo(userToken);
-    const checkUser = (await this.userService.findUserByEmail(
+    const checkUser = await this.userService.findUserByEmail(
       userInfo.email
-    )) as User;
+    ); /*as User*/
     if (checkUser) {
       // 만약 이메일 조회했는데 해당 이메일로 가입된 유저가 있다? -> JWT 리턴, 가입된 유저라고 클라로 리턴보내기
       // throw new AlreadySignedUserError(userInfo.email);
