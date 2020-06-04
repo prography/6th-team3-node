@@ -80,6 +80,24 @@ export class HotelController extends BaseController {
             },
           },
         });
+      } else if (req.query.monitoringquery) {
+        //모니터링명으로 호텔 검색할 때 사용
+        hotels = await this.databaseClient.hotel.findMany({
+          where: {
+            monitorings: {
+              some: {
+                name: req.query.monitoringquery,
+              },
+            },
+          },
+          include: {
+            monitorings: {
+              where: {
+                name: req.query.monitoringquery,
+              },
+            },
+          },
+        });
       } else {
         hotels = await this.databaseClient.hotel.findMany();
       }
