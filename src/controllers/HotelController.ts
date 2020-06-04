@@ -47,7 +47,7 @@ export class HotelController extends BaseController {
       } else if (req.query.opentimequery || req.query.closetimequery) {
         hotels = await this.databaseClient.hotel.findMany({
           where: {
-            //오픈, 클로즈 시간으로 검색할 때 사용
+            //오픈, 클로즈 시간으로 호텔 검색할 때 사용
             AND: [
               {
                 weekOpenTime: {
@@ -60,6 +60,24 @@ export class HotelController extends BaseController {
                 },
               },
             ],
+          },
+        });
+      } else if (req.query.servicequery) {
+        //서비스명으로 호텔 검색할 때 사용
+        hotels = await this.databaseClient.hotel.findMany({
+          where: {
+            services: {
+              some: {
+                name: req.query.servicequery,
+              },
+            },
+          },
+          include: {
+            services: {
+              where: {
+                name: req.query.servicequery,
+              },
+            },
           },
         });
       } else {
