@@ -1,5 +1,5 @@
 import { BaseController } from './BaseController';
-import { PrismaClient, Pet } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import jwtMiddleware from '../utils/AuthHelper';
 import { PetProvider, PetRegisterData } from '../providers/PetProvider';
 import { PetService } from '../services/PetService';
@@ -10,8 +10,6 @@ import {
   UseBefore,
   Body,
 } from 'routing-controllers';
-import { resolve } from 'dns';
-
 export interface SignUpPetRequest {
   userId: number;
   data: PetData[];
@@ -26,7 +24,7 @@ export interface PetData {
 export interface SignUpPetResponse {
   status: string;
   message: string;
-  data: Pet[];
+  data: any[];
 }
 
 @JsonController('/pet')
@@ -54,13 +52,13 @@ export class PetController extends BaseController {
 
     // TODO: userId JWT decode해서 가져오는 게 나을까?
     const { userId, data } = bodyData;
-    const petInfo: Pet[] = [];
+    const petInfo = [];
 
     for (const info of data) {
       const registerData: PetRegisterData = await this.petProvider.getRegisterPetData(
         info.registerNumber
       );
-      const newPet: Pet = await this.petService.createUserPet(
+      const newPet = await this.petService.createUserPet(
         userId,
         info,
         registerData

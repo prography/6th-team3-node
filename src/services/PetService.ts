@@ -1,8 +1,10 @@
 // Database 접근하기
 import { BaseService } from './BaseService';
-import { PrismaClient, Gender } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { PetData } from '../controllers/PetController';
 import { PetRegisterData } from '../providers/PetProvider';
+
+type Gender = 'MALE' | 'FEMAIL';
 
 export class PetService extends BaseService {
   private databaseClient: PrismaClient;
