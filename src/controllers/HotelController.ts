@@ -9,6 +9,7 @@ import {
   HttpError,
   Delete,
   Put,
+  Req,
 } from 'routing-controllers';
 
 import Logger from '../loaders/logger';
@@ -21,9 +22,49 @@ export class HotelController extends BaseController {
     this.databaseClient = new PrismaClient();
   }
   @Get()
-  public async allHotels() {
+  public async allHotels(@Req() req: any) {
     try {
-      const hotels = await this.databaseClient.hotel.findMany();
+      let hotels;
+      if (req.query.searchquery) {
+        hotels = await this.databaseClient.hotel.findMany({
+          where: {
+            OR: [
+              {
+                name: {
+                  //이름으로 호텔 검색
+                  contains: req.query.searchquery,
+                },
+              },
+              {
+                address: {
+                  //주소로 호텔 검색
+                  contains: req.query.searchquery,
+                },
+              },
+            ],
+          },
+        });
+      } else if (req.query.openquery || req.query.closequery) {
+        hotels = await this.databaseClient.hotel.findMany({
+          where: {
+            //오픈, 클로즈 시간으로 검색할 때 사용
+            AND: [
+              {
+                weekOpenTime: {
+                  lte: req.query.openquery,
+                },
+              },
+              {
+                weekCloseTime: {
+                  gte: req.query.closequery,
+                },
+              },
+            ],
+          },
+        });
+      } else {
+        hotels = await this.databaseClient.hotel.findMany();
+      }
       return hotels;
     } catch (e) {
       if (e instanceof HttpError) Logger.info(e);
@@ -49,12 +90,12 @@ export class HotelController extends BaseController {
     @BodyParam('zipcode') zipcode: string,
     @BodyParam('latitude') latitude: number,
     @BodyParam('longitude') longitude: number,
-    @BodyParam('weekOpenTime') weekOpenTime: Date,
-    @BodyParam('weekCloseTime') weekCloseTime: Date,
-    @BodyParam('satOpenTime') satOpenTime: Date,
-    @BodyParam('satCloseTime') satCloseTime: Date,
-    @BodyParam('sunOpenTime') sunOpenTime: Date,
-    @BodyParam('sunCloseTime') sunCloseTime: Date,
+    @BodyParam('weekOpenTime') weekOpenTime: string,
+    @BodyParam('weekCloseTime') weekCloseTime: string,
+    @BodyParam('satOpenTime') satOpenTime: string,
+    @BodyParam('satCloseTime') satCloseTime: string,
+    @BodyParam('sunOpenTime') sunOpenTime: string,
+    @BodyParam('sunCloseTime') sunCloseTime: string,
     @BodyParam('weekPrice') weekPrice: number,
     @BodyParam('satPrice') satPrice: number,
     @BodyParam('sunPrice') sunPrice: number,
@@ -104,12 +145,12 @@ export class HotelController extends BaseController {
     @BodyParam('zipcode') zipcode: string,
     @BodyParam('latitude') latitude: number,
     @BodyParam('longitude') longitude: number,
-    @BodyParam('weekOpenTime') weekOpenTime: Date,
-    @BodyParam('weekCloseTime') weekCloseTime: Date,
-    @BodyParam('satOpenTime') satOpenTime: Date,
-    @BodyParam('satCloseTime') satCloseTime: Date,
-    @BodyParam('sunOpenTime') sunOpenTime: Date,
-    @BodyParam('sunCloseTime') sunCloseTime: Date,
+    @BodyParam('weekOpenTime') weekOpenTime: string,
+    @BodyParam('weekCloseTime') weekCloseTime: string,
+    @BodyParam('satOpenTime') satOpenTime: string,
+    @BodyParam('satCloseTime') satCloseTime: string,
+    @BodyParam('sunOpenTime') sunOpenTime: string,
+    @BodyParam('sunCloseTime') sunCloseTime: string,
     @BodyParam('weekPrice') weekPrice: number,
     @BodyParam('satPrice') satPrice: number,
     @BodyParam('sunPrice') sunPrice: number,
