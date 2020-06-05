@@ -8,8 +8,8 @@ const PORT = Number(config.port || 1234);
 
 const startApplication = async () => {
   app.listen(PORT, '0.0.0.0', () => {
-    Logger.info(`server is running on ${HOST}:${PORT}`);
-    // console.log()
+    // Logger.info(`server is running on ${HOST}:${PORT}`);
+    console.log(`server is running on ${HOST}:${PORT}`);
   });
 };
 

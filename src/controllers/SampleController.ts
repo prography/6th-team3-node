@@ -12,6 +12,6 @@ export class TodoController extends BaseController {
   }
   @Get()
   public index() {
-    return 'Hello! This is sample😎';
+    return 'Hello! This is sample🤔';
   }
 }

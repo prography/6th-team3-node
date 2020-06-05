@@ -6,9 +6,10 @@
   "author": "emiling <scopradical@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node ./dist",
     "start": "yarn prisma:generate && node ./dist",
     "start:dev": "NODE_ENV=development yarn prisma:generate && nodemon",
+    "start:prod": "NODE_ENV=production yarn prisma:generate && yarn build",
     "prisma:generate": "yarn prisma:migrate && yarn prisma2 generate",
     "prisma:migrate": "yarn prisma:save && yarn prisma2 migrate up --experimental",
     "prisma:save": "yarn prisma2 migrate save --name init --experimental",
