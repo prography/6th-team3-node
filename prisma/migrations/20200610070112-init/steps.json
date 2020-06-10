@@ -1,0 +1,105 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "Hotel",
+      "field": "mediumCriteria",
+      "type": "Int",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Hotel",
+          "field": "mediumCriteria"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Hotel",
+          "field": "mediumCriteria"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"medium_criteria\""
+    },
+    {
+      "tag": "CreateField",
+      "model": "Hotel",
+      "field": "largeCriteria",
+      "type": "Int",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Hotel",
+          "field": "largeCriteria"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Hotel",
+          "field": "largeCriteria"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"largs_criteria\""
+    },
+    {
+      "tag": "UpdateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Model",
+          "model": "Service"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "newValue": "\"hotel_service\""
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Price"
+        },
+        "directive": "map"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Model",
+          "model": "Price"
+        },
+        "directive": "map"
+      },
+      "argument": "",
+      "value": "\"price\""
+    }
+  ]
+}
