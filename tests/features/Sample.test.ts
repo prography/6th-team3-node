@@ -6,7 +6,7 @@ describe('test Sample', () => {
 
   test('test index sample', async () => {
     const response = await client.get('/api');
-    const result = 'Hello! This is sample😎';
+    const result = 'Hello! This is sample🤔';
     expect(response.status).toBe(200);
     expect(response.body).toBe(result);
   });
