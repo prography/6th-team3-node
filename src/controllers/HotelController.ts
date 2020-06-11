@@ -1,5 +1,5 @@
 import { BaseController } from './BaseController';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Price } from '@prisma/client';
 import {
   JsonController,
   Get,
@@ -10,16 +10,54 @@ import {
   Delete,
   Put,
   Req,
+  Body,
 } from 'routing-controllers';
 
 import Logger from '../loaders/logger';
+import { HotelService } from '../services/HotelService';
+
+export interface SignUpHotelRequest {
+  data: HotelData;
+}
+
+export interface SignUpHotelResponse {
+  status: number;
+  message: string;
+  data: any[];
+}
+
+export interface HotelData {
+  name: string;
+  description: string;
+  address: string;
+  addressDetail: string;
+  zipcode: string;
+  latiude: number;
+  longitude: number;
+  weekOpenTime: string;
+  weekCloseTime: string;
+  satOpenTime: string;
+  satCloseTime: string;
+  sunCloseTime: string;
+  sunOpenTime: string;
+  phoneNumber: string;
+  monitorAvailable: boolean;
+  isNeuteredOnly: boolean;
+  maxDogSize: number;
+  pageLink: string;
+  mediumCriteria: number;
+  largeCriteria: number;
+  prices: Price[];
+}
 
 @JsonController('/hotels')
 export class HotelController extends BaseController {
   private databaseClient: PrismaClient;
+  private hotelService: HotelService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
+    this.hotelService = new HotelService();
   }
   @Get()
   public async allHotels(@Req() req: any) {
@@ -118,114 +156,66 @@ export class HotelController extends BaseController {
     }
   }
   @Post()
-  public async createHotel(
-    @BodyParam('name') name: string,
-    @BodyParam('description') description: string,
-    @BodyParam('address') address: string,
-    @BodyParam('addressDetail') addressDetail: string,
-    @BodyParam('zipcode') zipcode: string,
-    @BodyParam('latitude') latitude: number,
-    @BodyParam('longitude') longitude: number,
-    @BodyParam('weekOpenTime') weekOpenTime: string,
-    @BodyParam('weekCloseTime') weekCloseTime: string,
-    @BodyParam('satOpenTime') satOpenTime: string,
-    @BodyParam('satCloseTime') satCloseTime: string,
-    @BodyParam('sunOpenTime') sunOpenTime: string,
-    @BodyParam('sunCloseTime') sunCloseTime: string,
-    @BodyParam('weekPrice') weekPrice: number,
-    @BodyParam('satPrice') satPrice: number,
-    @BodyParam('sunPrice') sunPrice: number,
-    @BodyParam('phoneNumber') phoneNumber: string,
-    @BodyParam('monitorAvailable') monitorAvailable: boolean,
-    @BodyParam('isNeuteredOnly') isNeuteredOnly: boolean,
-    @BodyParam('maxDogSize') maxDogSize: number,
-    @BodyParam('pageLink') pageLink: string
-  ) {
-    try {
-      return this.databaseClient.hotel.create({
-        data: {
-          name,
-          description,
-          address,
-          addressDetail,
-          zipcode,
-          latitude,
-          longitude,
-          weekOpenTime,
-          weekCloseTime,
-          satOpenTime,
-          satCloseTime,
-          sunOpenTime,
-          sunCloseTime,
-          weekPrice,
-          satPrice,
-          sunPrice,
-          phoneNumber,
-          monitorAvailable,
-          isNeuteredOnly,
-          maxDogSize,
-          pageLink,
-        },
-      });
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
+  public async createHotel(@Body() hotelData: string) {
+    const bodyData: SignUpHotelRequest = JSON.parse(JSON.stringify(hotelData));
+    const { data } = bodyData;
+    const priceData = JSON.parse(JSON.stringify(data));
+    const { prices } = priceData; //price 파싱
+    const priceInfo = [];
+
+    const newHotel: any = await this.hotelService.createHotel(data);
+
+    const hotel_id = JSON.parse(JSON.stringify(newHotel));
+    const { id } = hotel_id; //hotel_id 파싱
+
+    for (const info of prices) {
+      const newHotelPrice = await this.hotelService.createHotelPrice(id, info);
+      priceInfo.push(newHotelPrice);
     }
+    newHotel.prices = priceInfo;
+
+    const response: SignUpHotelResponse = {
+      status: 201,
+      message: 'Success Hotel Creation',
+      data: newHotel,
+    };
+
+    return response;
   }
   @Put('/:hotelId')
   public async updateHotel(
     @Param('hotelId') hotelId: number,
-    @BodyParam('name') name: string,
-    @BodyParam('description') description: string,
-    @BodyParam('address') address: string,
-    @BodyParam('addressDetail') addressDetail: string,
-    @BodyParam('zipcode') zipcode: string,
-    @BodyParam('latitude') latitude: number,
-    @BodyParam('longitude') longitude: number,
-    @BodyParam('weekOpenTime') weekOpenTime: string,
-    @BodyParam('weekCloseTime') weekCloseTime: string,
-    @BodyParam('satOpenTime') satOpenTime: string,
-    @BodyParam('satCloseTime') satCloseTime: string,
-    @BodyParam('sunOpenTime') sunOpenTime: string,
-    @BodyParam('sunCloseTime') sunCloseTime: string,
-    @BodyParam('weekPrice') weekPrice: number,
-    @BodyParam('satPrice') satPrice: number,
-    @BodyParam('sunPrice') sunPrice: number,
-    @BodyParam('phoneNumber') phoneNumber: string,
-    @BodyParam('monitorAvailable') monitorAvailable: boolean,
-    @BodyParam('isNeuteredOnly') isNeuteredOnly: boolean,
-    @BodyParam('maxDogSize') maxDogSize: number,
-    @BodyParam('pageLink') pageLink: string
+    @Body() hotelData: string
   ) {
-    try {
-      return this.databaseClient.hotel.update({
-        where: { id: Number(hotelId) },
-        data: {
-          name,
-          description,
-          address,
-          addressDetail,
-          zipcode,
-          latitude,
-          longitude,
-          weekOpenTime,
-          weekCloseTime,
-          satOpenTime,
-          satCloseTime,
-          sunOpenTime,
-          sunCloseTime,
-          weekPrice,
-          satPrice,
-          sunPrice,
-          phoneNumber,
-          monitorAvailable,
-          isNeuteredOnly,
-          maxDogSize,
-          pageLink,
-        },
-      });
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
+    const bodyData: SignUpHotelRequest = JSON.parse(JSON.stringify(hotelData));
+    const { data } = bodyData;
+    const priceData = JSON.parse(JSON.stringify(data));
+
+    const newHotel: any = await this.hotelService.editHotel(hotelId, data);
+
+    const hotel_id = JSON.parse(JSON.stringify(newHotel));
+    const { id } = hotel_id; //hotel_id 파싱
+
+    if (data.prices) {
+      const { prices } = priceData; //price 파싱
+      for (const info of prices) {
+        const newHotelPrice = await this.hotelService.updateHotelPrice(
+          id,
+          info
+        );
+      }
     }
+
+    const hotelPrice = await this.hotelService.getHotelPrice(id);
+    newHotel.prices = hotelPrice;
+
+    const response: SignUpHotelResponse = {
+      status: 201,
+      message: 'Success Hotel edit',
+      data: newHotel,
+    };
+
+    return response;
   }
   @Delete('/:hotelId')
   public async deleteHotel(@Param('hotelId') hotelId: number) {
