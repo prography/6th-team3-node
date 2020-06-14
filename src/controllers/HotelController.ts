@@ -4,7 +4,6 @@ import {
   JsonController,
   Get,
   Post,
-  BodyParam,
   Param,
   HttpError,
   Delete,
@@ -15,6 +14,8 @@ import {
 
 import Logger from '../loaders/logger';
 import { HotelService } from '../services/HotelService';
+import { MonitoringService } from '../services/MonitoringService';
+import { ServiceService } from '../services/ServiceService';
 
 export interface SignUpHotelRequest {
   data: HotelData;
@@ -24,6 +25,11 @@ export interface SignUpHotelResponse {
   status: number;
   message: string;
   data: any[];
+}
+
+export interface DeleteHotelResponse {
+  status: number;
+  message: string;
 }
 
 export interface HotelData {
@@ -54,113 +60,77 @@ export interface HotelData {
 export class HotelController extends BaseController {
   private databaseClient: PrismaClient;
   private hotelService: HotelService;
+  private monitoringService: MonitoringService;
+  private serviceService: ServiceService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
     this.hotelService = new HotelService();
+    this.monitoringService = new MonitoringService();
+    this.serviceService = new ServiceService();
   }
   @Get()
   public async allHotels(@Req() req: any) {
-    try {
-      let hotels;
-      if (req.query.searchquery) {
-        hotels = await this.databaseClient.hotel.findMany({
-          where: {
-            OR: [
-              {
-                name: {
-                  //이름으로 호텔 검색
-                  contains: req.query.searchquery,
-                },
-              },
-              {
-                address: {
-                  //주소로 호텔 검색
-                  contains: req.query.searchquery,
-                },
-              },
-            ],
-          },
-        });
-      } else if (req.query.opentimequery || req.query.closetimequery) {
-        hotels = await this.databaseClient.hotel.findMany({
-          where: {
-            //오픈, 클로즈 시간으로 호텔 검색할 때 사용
-            AND: [
-              {
-                weekOpenTime: {
-                  lte: req.query.opentimequery,
-                },
-              },
-              {
-                weekCloseTime: {
-                  gte: req.query.closetimequery,
-                },
-              },
-            ],
-          },
-        });
-      } else if (req.query.servicequery) {
-        //서비스명으로 호텔 검색할 때 사용
-        hotels = await this.databaseClient.hotel.findMany({
-          where: {
-            services: {
-              some: {
-                name: req.query.servicequery,
-              },
-            },
-          },
-          include: {
-            services: {
-              where: {
-                name: req.query.servicequery,
-              },
-            },
-          },
-        });
-      } else if (req.query.monitoringquery) {
-        //모니터링명으로 호텔 검색할 때 사용
-        hotels = await this.databaseClient.hotel.findMany({
-          where: {
-            monitorings: {
-              some: {
-                name: req.query.monitoringquery,
-              },
-            },
-          },
-          include: {
-            monitorings: {
-              where: {
-                name: req.query.monitoringquery,
-              },
-            },
-          },
-        });
-      } else {
-        hotels = await this.databaseClient.hotel.findMany();
-      }
-      return hotels;
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
+    let hotels: any;
+    if (req.query.namequery) {
+      //이름으로 호텔 검색
+      hotels = await this.hotelService.getHotelsName(req.query.namequery);
+    } else if (req.query.addressqury) {
+      //주소로 호텔 검색
+      hotels = await this.hotelService.getHotelsAddress(req.query.addressquery);
+    } else if (req.query.opentimequery || req.query.closetimequery) {
+      hotels = await this.hotelService.getHotelsTime(
+        req.query.opentimequery,
+        req.query.closetimequery
+      );
+    } else if (req.query.servicequery) {
+      //서비스명으로 호텔 검색할 때 사용
+      hotels = await this.hotelService.getHotelsService(req.query.servicequery);
+    } else if (req.query.monitoringquery) {
+      //모니터링명으로 호텔 검색할 때 사용
+      hotels = await this.hotelService.getHotelsMonitoring(
+        req.query.monitoringquery
+      );
+    } else {
+      hotels = await this.hotelService.getHotels();
     }
+    let info: any;
+    for (info of hotels) {
+      const { id } = info;
+      const hotelsPrice = await this.hotelService.getHotelPrice(id);
+      info.prices = hotelsPrice;
+    }
+    const response: SignUpHotelResponse = {
+      status: 201,
+      message: 'Success Hotels get',
+      data: hotels,
+    };
+
+    return response;
   }
   @Get('/:hotelId')
   public async oneHotel(@Param('hotelId') hotelId: number) {
-    try {
-      const hotel = await this.databaseClient.hotel.findOne({
-        where: { id: Number(hotelId) },
-      });
-      return hotel;
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
-    }
+    const getHotel: any = await this.hotelService.getHotel(hotelId);
+    const hotel_id = JSON.parse(JSON.stringify(getHotel));
+    const { id } = hotel_id; //hotel_id 파싱
+    const hotelPrice = await this.hotelService.getHotelPrice(id);
+
+    getHotel.prices = hotelPrice;
+
+    const response: SignUpHotelResponse = {
+      status: 201,
+      message: 'Success Hotel get',
+      data: getHotel,
+    };
+
+    return response;
   }
   @Post()
   public async createHotel(@Body() hotelData: string) {
     const bodyData: SignUpHotelRequest = JSON.parse(JSON.stringify(hotelData));
     const { data } = bodyData;
     const priceData = JSON.parse(JSON.stringify(data));
-    const { prices } = priceData; //price 파싱
+
     const priceInfo = [];
 
     const newHotel: any = await this.hotelService.createHotel(data);
@@ -168,9 +138,15 @@ export class HotelController extends BaseController {
     const hotel_id = JSON.parse(JSON.stringify(newHotel));
     const { id } = hotel_id; //hotel_id 파싱
 
-    for (const info of prices) {
-      const newHotelPrice = await this.hotelService.createHotelPrice(id, info);
-      priceInfo.push(newHotelPrice);
+    if (data.prices) {
+      const { prices } = priceData; //price 파싱
+      for (const info of prices) {
+        const newHotelPrice = await this.hotelService.createHotelPrice(
+          id,
+          info
+        );
+        priceInfo.push(newHotelPrice);
+      }
     }
     newHotel.prices = priceInfo;
 
@@ -192,7 +168,7 @@ export class HotelController extends BaseController {
     const priceData = JSON.parse(JSON.stringify(data));
 
     const newHotel: any = await this.hotelService.editHotel(hotelId, data);
-
+    //console.log(newHotel);
     const hotel_id = JSON.parse(JSON.stringify(newHotel));
     const { id } = hotel_id; //hotel_id 파싱
 
@@ -217,15 +193,45 @@ export class HotelController extends BaseController {
 
     return response;
   }
+  //TODO: cascade delete 구현하기
   @Delete('/:hotelId')
   public async deleteHotel(@Param('hotelId') hotelId: number) {
-    try {
-      const deleteHotel = await this.databaseClient.hotel.delete({
-        where: { id: Number(hotelId) },
-      });
-      return deleteHotel;
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
+    const hotelPrice = await this.hotelService.getHotelPrice(hotelId);
+    const hotelMonitoring = await this.monitoringService.getHotelMonitorings(
+      hotelId
+    );
+    const hotelService = await this.serviceService.getHotelServices(hotelId);
+
+    if (hotelPrice) {
+      for (const info of hotelPrice) {
+        const { id } = info;
+        const deleteHotelPrice = await this.hotelService.deleteHotelPrice(id);
+      }
     }
+    if (hotelMonitoring) {
+      for (const info of hotelMonitoring) {
+        const { id } = info;
+        const deleteHotelMonitoring = await this.monitoringService.deleteHotelMonitoring(
+          id
+        );
+      }
+    }
+    if (hotelService) {
+      for (const info of hotelService) {
+        const { id } = info;
+        const deleteHotelService = await this.serviceService.deleteHotelService(
+          id
+        );
+      }
+    }
+
+    const deleteHotel = await this.hotelService.deleteHotel(hotelId);
+
+    const response: DeleteHotelResponse = {
+      status: 201,
+      message: 'Success Hotel Delete',
+    };
+
+    return response;
   }
 }

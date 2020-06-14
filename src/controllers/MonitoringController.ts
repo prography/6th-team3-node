@@ -4,35 +4,65 @@ import {
   JsonController,
   Get,
   Post,
-  BodyParam,
   Param,
   HttpError,
   Delete,
   Put,
+  Body,
 } from 'routing-controllers';
 
 import Logger from '../loaders/logger';
+import { MonitoringService } from '../services/MonitoringService';
 
-@JsonController('/hotels/:hotelId/monitorings')
+export interface SignUpMonitoringRequest {
+  hotelId: number;
+  data: MonitoringData[];
+}
+
+export interface EditMonitoringRequest {
+  hotelId: number;
+  data: MonitoringEditData[];
+}
+
+export interface SignUpMonitoringResponse {
+  status: number;
+  message: string;
+  data: any[];
+}
+
+export interface MonitoringData {
+  name: string;
+}
+
+export interface MonitoringEditData {
+  id: number;
+  name: string;
+}
+
+@JsonController('/monitorings')
 export class MonitoringController extends BaseController {
   private databaseClient: PrismaClient;
+  private monitoringService: MonitoringService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
+    this.monitoringService = new MonitoringService();
   }
-  @Get()
+  @Get('/:hotelId')
   public async hotelMonitorings(@Param('hotelId') hotelId: number) {
-    try {
-      const monitorings = await this.databaseClient.monitoring.findMany({
-        where: { hotelId: Number(hotelId) },
-      });
-      return monitorings;
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
-    }
+    const hotelMonitoring = await this.monitoringService.getHotelMonitorings(
+      hotelId
+    );
+
+    const response: SignUpMonitoringResponse = {
+      status: 201,
+      message: 'Success Hotel Monitoring get',
+      data: hotelMonitoring,
+    };
+    return response;
   }
 
-  @Get('/:monitoringId')
+  /*@Get('/:monitoringId')
   public async hotelMonitoring(@Param('monitoringId') monitoringId: number) {
     try {
       const monitoring = await this.databaseClient.monitoring.findOne({
@@ -42,59 +72,80 @@ export class MonitoringController extends BaseController {
     } catch (e) {
       if (e instanceof HttpError) Logger.info(e);
     }
-  }
+  }*/
 
   @Post()
-  public async createHotelMonitoring(
-    @Param('hotelId') hotelId: number,
-    @BodyParam('name') name: string
-  ) {
-    try {
-      return this.databaseClient.monitoring.create({
-        data: {
-          name,
-          hotel: {
-            connect: { id: Number(hotelId) },
-          },
-        },
-      });
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
+  public async createHotelMonitoring(@Body() monitoringData: string) {
+    const bodyData: SignUpMonitoringRequest = JSON.parse(
+      JSON.stringify(monitoringData)
+    );
+
+    const { hotelId, data } = bodyData;
+    const monitoringInfo = [];
+
+    for (const info of data) {
+      const newMonitoring = await this.monitoringService.createHotelMonitoring(
+        hotelId,
+        info
+      );
+      monitoringInfo.push(newMonitoring);
     }
+
+    const response: SignUpMonitoringResponse = {
+      status: 201,
+      message: 'Success Hotel Monitoring Creation',
+      data: monitoringInfo,
+    };
+
+    return response;
   }
-  @Put('/:monitoringId')
-  public async updateHotelMonitoring(
-    @Param('hotelId') hotelId: number,
-    @Param('monitoringId') monitoringId: number,
-    @BodyParam('name') name: string
-  ) {
-    try {
-      return this.databaseClient.monitoring.update({
-        where: { id: Number(monitoringId) },
-        data: {
-          name,
-          hotel: {
-            connect: { id: Number(hotelId) },
-          },
-        },
-      });
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
+
+  @Put()
+  public async updateHotelMonitoring(@Body() monitoringData: string) {
+    const bodyData: EditMonitoringRequest = JSON.parse(
+      JSON.stringify(monitoringData)
+    );
+
+    const { hotelId, data } = bodyData;
+
+    for (const info of data) {
+      const newMonitoring = await this.monitoringService.editHotelMonitoring(
+        hotelId,
+        info
+      );
     }
+
+    const hotelMonitoring = await this.monitoringService.getHotelMonitorings(
+      hotelId
+    );
+
+    const response: SignUpMonitoringResponse = {
+      status: 201,
+      message: 'Success Hotel Monitoring Edit',
+      data: hotelMonitoring,
+    };
+
+    return response;
   }
-  @Delete('/:monitoringId')
+  @Delete('/:hotelId/:monitoringId')
   public async deleteHotelMonitoring(
+    @Param('hotelId') hotelId: number,
     @Param('monitoringId') monitoringId: number
   ) {
-    try {
-      const deleteHotelMonitoring = await this.databaseClient.monitoring.delete(
-        {
-          where: { id: Number(monitoringId) },
-        }
-      );
-      return deleteHotelMonitoring;
-    } catch (e) {
-      if (e instanceof HttpError) Logger.info(e);
-    }
+    const deleteHotelMonitoring = await this.monitoringService.deleteHotelMonitoring(
+      monitoringId
+    );
+
+    const hotelMonitoring = await this.monitoringService.getHotelMonitorings(
+      hotelId
+    );
+
+    const response: SignUpMonitoringResponse = {
+      status: 201,
+      message: 'Success Hotel Monitoring delete',
+      data: hotelMonitoring,
+    };
+
+    return response;
   }
 }

@@ -1,5 +1,5 @@
 import { BaseService } from './BaseService';
-import { PrismaClient, Price } from '@prisma/client';
+import { PrismaClient, Price, Hotel } from '@prisma/client';
 import { HotelData } from '../controllers/HotelController';
 
 export class HotelService extends BaseService {
@@ -98,15 +98,131 @@ export class HotelService extends BaseService {
     return result;
   }
 
+  public async getHotels() {
+    const result = await this.databaseClient.hotel.findMany();
+    return result;
+  }
+
+  public async getHotelsName(namequery: string) {
+    const result = await this.databaseClient.hotel.findMany({
+      where: {
+        name: {
+          //이름으로 호텔 검색
+          contains: namequery,
+        },
+      },
+    });
+    return result;
+  }
+
+  public async getHotelsAddress(addressquery: string) {
+    const result = await this.databaseClient.hotel.findMany({
+      where: {
+        address: {
+          //이름으로 호텔 검색
+          contains: addressquery,
+        },
+      },
+    });
+    return result;
+  }
+
+  public async getHotelsTime(opentimequery: string, closetimequery: string) {
+    const result = await this.databaseClient.hotel.findMany({
+      where: {
+        //오픈, 클로즈 시간으로 호텔 검색할 때 사용
+        AND: [
+          {
+            weekOpenTime: {
+              lte: opentimequery,
+            },
+          },
+          {
+            weekCloseTime: {
+              gte: closetimequery,
+            },
+          },
+        ],
+      },
+    });
+    return result;
+  }
+
+  public async getHotelsService(servicequery: string) {
+    const result = await this.databaseClient.hotel.findMany({
+      where: {
+        services: {
+          some: {
+            name: servicequery,
+          },
+        },
+      },
+      include: {
+        services: {
+          where: {
+            name: servicequery,
+          },
+        },
+      },
+    });
+    return result;
+  }
+
+  public async getHotelsMonitoring(monitoringquery: string) {
+    const result = await this.databaseClient.hotel.findMany({
+      where: {
+        monitorings: {
+          some: {
+            name: monitoringquery,
+          },
+        },
+      },
+      include: {
+        monitorings: {
+          where: {
+            name: monitoringquery,
+          },
+        },
+      },
+    });
+    return result;
+  }
+
+  public async getHotel(hotelId: number) {
+    const result = await this.databaseClient.hotel.findOne({
+      where: {
+        id: Number(hotelId),
+      },
+    });
+    return result;
+  }
+
   public async getHotelPrice(hotelId: number) {
     const result = await this.databaseClient.price.findMany({
       where: {
         hotel: {
-          id: hotelId,
+          id: Number(hotelId),
         },
       },
     });
     //console.log(32, result);
     return result;
+  }
+
+  public async deleteHotel(hotelId: number) {
+    const result = await this.databaseClient.hotel.delete({
+      where: {
+        id: Number(hotelId),
+      },
+    });
+    return result;
+  }
+
+  public async deleteHotelPrice(priceId: number) {
+    const result = await this.databaseClient.price.delete({
+      where: {
+        id: Number(priceId),
+      },
+    });
   }
 }
