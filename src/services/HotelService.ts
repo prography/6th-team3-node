@@ -1,5 +1,5 @@
 import { BaseService } from './BaseService';
-import { PrismaClient, Price, Hotel } from '@prisma/client';
+import { PrismaClient, Price } from '@prisma/client';
 import { HotelData } from '../controllers/HotelController';
 
 export class HotelService extends BaseService {

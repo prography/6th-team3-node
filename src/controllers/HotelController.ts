@@ -16,6 +16,7 @@ import Logger from '../loaders/logger';
 import { HotelService } from '../services/HotelService';
 import { MonitoringService } from '../services/MonitoringService';
 import { ServiceService } from '../services/ServiceService';
+import { ReservationService } from '../services/ReservationService';
 
 export interface SignUpHotelRequest {
   data: HotelData;
@@ -62,12 +63,14 @@ export class HotelController extends BaseController {
   private hotelService: HotelService;
   private monitoringService: MonitoringService;
   private serviceService: ServiceService;
+  private reservationService: ReservationService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
     this.hotelService = new HotelService();
     this.monitoringService = new MonitoringService();
     this.serviceService = new ServiceService();
+    this.reservationService = new ReservationService();
   }
   @Get()
   public async allHotels(@Req() req: any) {
@@ -201,6 +204,7 @@ export class HotelController extends BaseController {
       hotelId
     );
     const hotelService = await this.serviceService.getHotelServices(hotelId);
+    const reservation = await this.reservationService.getReservations(hotelId);
 
     if (hotelPrice) {
       for (const info of hotelPrice) {
@@ -220,6 +224,25 @@ export class HotelController extends BaseController {
       for (const info of hotelService) {
         const { id } = info;
         const deleteHotelService = await this.serviceService.deleteHotelService(
+          id
+        );
+      }
+    }
+    if (reservation) {
+      for (const info of reservation) {
+        const { id } = info;
+        const reservationPayment = await this.reservationService.getReservationPayment(
+          id
+        );
+        if (reservationPayment) {
+          for (const info of reservationPayment) {
+            const { id } = info;
+            const deleteReservationPayment = await this.reservationService.deleteReservationPayment(
+              id
+            );
+          }
+        }
+        const deleteReservation = await this.reservationService.deleteReservation(
           id
         );
       }
