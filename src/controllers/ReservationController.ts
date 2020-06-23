@@ -56,11 +56,18 @@ export class ReservationController extends BaseController {
     this.reservationService = new ReservationService();
   }
 
-  @Get('/:hotelId')
-  public async allreservations(@Param('hotelId') hotelId: number) {
-    const getReservations: any = await this.reservationService.getReservations(
-      hotelId
-    );
+  @Get()
+  public async allreservations(@Req() req: any) {
+    let getReservations: any;
+    if (req.query.hotel_id) {
+      getReservations = await this.reservationService.getReservationsHotel(
+        req.query.hotel_id
+      );
+    } else if (req.query.user_id) {
+      getReservations = await this.reservationService.getReservationsUser(
+        req.query.user_id
+      );
+    }
 
     let info: any;
     for (info of getReservations) {

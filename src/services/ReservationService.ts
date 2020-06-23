@@ -10,10 +10,20 @@ export class ReservationService extends BaseService {
     this.databaseClient = new PrismaClient();
   }
 
-  public async getReservations(hotelId: number) {
+  public async getReservationsHotel(hotelId: number) {
     const result = await this.databaseClient.reservation.findMany({
       where: {
         hotelId: Number(hotelId),
+      },
+    });
+    console.log(32, result);
+    return result;
+  }
+
+  public async getReservationsUser(userId: number) {
+    const result = await this.databaseClient.reservation.findMany({
+      where: {
+        userId: Number(userId),
       },
     });
     console.log(32, result);
