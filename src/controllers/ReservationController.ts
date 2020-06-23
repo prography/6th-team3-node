@@ -1,5 +1,5 @@
 import { BaseController } from './BaseController';
-import { PrismaClient, Payment } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import {
   JsonController,
   Get,
@@ -31,13 +31,17 @@ export interface ReservationData {
   endDate: Date;
   pickupTime: string;
   request: string;
-  payment: Payment;
+  //payment: Payment;
 }
 
 export interface SignUpReservationResponse {
   status: number;
   message: string;
   data: any[];
+}
+
+export interface DeleteReservationRequest {
+  userId: number;
 }
 
 export interface DeleteReservationResponse {
@@ -56,13 +60,20 @@ export class ReservationController extends BaseController {
     this.reservationService = new ReservationService();
   }
 
-  @Get('/:hotelId')
-  public async allreservations(@Param('hotelId') hotelId: number) {
-    const getReservations: any = await this.reservationService.getReservations(
-      hotelId
-    );
+  @Get()
+  public async allreservations(@Req() req: any) {
+    let getReservations: any;
+    if (req.query.hotel_id) {
+      getReservations = await this.reservationService.getReservationsHotel(
+        req.query.hotel_id
+      );
+    } else if (req.query.user_id) {
+      getReservations = await this.reservationService.getReservationsUser(
+        req.query.user_id
+      );
+    }
 
-    let info: any;
+    /*let info: any;
     for (info of getReservations) {
       const { id } = info;
       const reservationPayment = await this.reservationService.getReservationPayment(
@@ -72,7 +83,7 @@ export class ReservationController extends BaseController {
       for (const pay of reservationPayment) {
         info.payment = pay;
       }
-    }
+    }*/
 
     const response: SignUpReservationResponse = {
       status: 201,
@@ -103,13 +114,13 @@ export class ReservationController extends BaseController {
       const reservation_id = JSON.parse(JSON.stringify(newReservation));
       const { id } = reservation_id; //reservation_id 파싱
 
-      if (info.payment) {
+      /*if (info.payment) {
         const newReservationPayment = await this.reservationService.createReservationPayment(
           id,
           info.payment
         );
         newReservation.payment = newReservationPayment;
-      }
+      }*/
       reservationInfo.push(newReservation);
     }
 
@@ -139,7 +150,7 @@ export class ReservationController extends BaseController {
       data
     );
 
-    if (data.payment) {
+    /*if (data.payment) {
       const newReservationPayment = await this.reservationService.updateReservationPayment(
         reservationId,
         data.payment
@@ -152,7 +163,7 @@ export class ReservationController extends BaseController {
 
     for (const info of reservationPayment) {
       newReservation.payment = info;
-    }
+    }*/
 
     const response: SignUpReservationResponse = {
       status: 201,
@@ -166,9 +177,15 @@ export class ReservationController extends BaseController {
   @Delete('/:hotelId/:reservationId')
   public async deleteReservation(
     @Param('hotelId') hotelId: number,
-    @Param('reservationId') reservationId: number
+    @Param('reservationId') reservationId: number,
+    @Body() reservationData: string
   ) {
-    const reservationPayment = await this.reservationService.getReservationPayment(
+    const bodyData: DeleteReservationRequest = JSON.parse(
+      JSON.stringify(reservationData)
+    );
+    const { userId } = bodyData;
+
+    /*const reservationPayment = await this.reservationService.getReservationPayment(
       reservationId
     );
 
@@ -179,7 +196,7 @@ export class ReservationController extends BaseController {
           id
         );
       }
-    }
+    }*/
 
     const deleteReservation = await this.reservationService.deleteReservation(
       reservationId
