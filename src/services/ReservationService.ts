@@ -99,7 +99,6 @@ export class ReservationService extends BaseService {
       where: { id: data.id },
       data: {
         name: data.name,
-        //reservation: { connect: { id: Number(reservationId) } },
       },
     });
     console.log(32, result);

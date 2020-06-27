@@ -40,6 +40,10 @@ export interface SignUpReservationResponse {
   data: any[];
 }
 
+export interface DeleteReservationRequest {
+  userId: number;
+}
+
 export interface DeleteReservationResponse {
   status: number;
   message: string;
@@ -173,8 +177,13 @@ export class ReservationController extends BaseController {
   @Delete('/:hotelId/:reservationId')
   public async deleteReservation(
     @Param('hotelId') hotelId: number,
-    @Param('reservationId') reservationId: number
+    @Param('reservationId') reservationId: number,
+    @Body() reservationData: string
   ) {
+    const bodyData: DeleteReservationRequest = JSON.parse(
+      JSON.stringify(reservationData)
+    );
+    const { userId } = bodyData;
     const reservationPayment = await this.reservationService.getReservationPayment(
       reservationId
     );
