@@ -237,7 +237,7 @@ export class HotelController extends BaseController {
     if (reservation) {
       for (const info of reservation) {
         const { id } = info;
-        const reservationPayment = await this.reservationService.getReservationPayment(
+        /*const reservationPayment = await this.reservationService.getReservationPayment(
           id
         );
         if (reservationPayment) {
@@ -247,7 +247,7 @@ export class HotelController extends BaseController {
               id
             );
           }
-        }
+        }*/
         const deleteReservation = await this.reservationService.deleteReservation(
           id
         );

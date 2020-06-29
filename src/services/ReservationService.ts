@@ -1,5 +1,5 @@
 import { BaseService } from './BaseService';
-import { PrismaClient, Payment } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { ReservationData } from '../controllers/ReservationController';
 
 export class ReservationService extends BaseService {
@@ -30,7 +30,7 @@ export class ReservationService extends BaseService {
     return result;
   }
 
-  public async getReservationPayment(reservationId: number) {
+  /*public async getReservationPayment(reservationId: number) {
     const result = await this.databaseClient.payment.findMany({
       where: {
         reservationId: Number(reservationId),
@@ -38,7 +38,7 @@ export class ReservationService extends BaseService {
     });
     console.log(32, result);
     return result;
-  }
+  }*/
 
   public async createReservation(
     hotelId: number,
@@ -60,7 +60,7 @@ export class ReservationService extends BaseService {
     return result;
   }
 
-  public async createReservationPayment(reservationId: number, data: Payment) {
+  /*public async createReservationPayment(reservationId: number, data: Payment) {
     const result = await this.databaseClient.payment.create({
       data: {
         name: data.name,
@@ -69,7 +69,7 @@ export class ReservationService extends BaseService {
     });
     console.log(32, result);
     return result;
-  }
+  }*/
 
   public async editReservation(
     reservationId: number,
@@ -93,12 +93,13 @@ export class ReservationService extends BaseService {
     return result;
   }
 
-  public async updateReservationPayment(reservationId: number, data: Payment) {
+  /*public async updateReservationPayment(reservationId: number, data: Payment) {
     //console.log(data.id);
     const result = await this.databaseClient.payment.update({
       where: { id: data.id },
       data: {
         name: data.name,
+        //reservation: { connect: { id: Number(reservationId) } },
       },
     });
     console.log(32, result);
@@ -111,7 +112,7 @@ export class ReservationService extends BaseService {
         id: Number(paymentId),
       },
     });
-  }
+  }*/
 
   public async deleteReservation(reservationId: number) {
     const result = await this.databaseClient.reservation.delete({

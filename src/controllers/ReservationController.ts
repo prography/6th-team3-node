@@ -1,5 +1,5 @@
 import { BaseController } from './BaseController';
-import { PrismaClient, Payment } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import {
   JsonController,
   Get,
@@ -31,7 +31,7 @@ export interface ReservationData {
   endDate: Date;
   pickupTime: string;
   request: string;
-  payment: Payment;
+  //payment: Payment;
 }
 
 export interface SignUpReservationResponse {
@@ -73,7 +73,7 @@ export class ReservationController extends BaseController {
       );
     }
 
-    let info: any;
+    /*let info: any;
     for (info of getReservations) {
       const { id } = info;
       const reservationPayment = await this.reservationService.getReservationPayment(
@@ -83,7 +83,7 @@ export class ReservationController extends BaseController {
       for (const pay of reservationPayment) {
         info.payment = pay;
       }
-    }
+    }*/
 
     const response: SignUpReservationResponse = {
       status: 201,
@@ -114,13 +114,13 @@ export class ReservationController extends BaseController {
       const reservation_id = JSON.parse(JSON.stringify(newReservation));
       const { id } = reservation_id; //reservation_id 파싱
 
-      if (info.payment) {
+      /*if (info.payment) {
         const newReservationPayment = await this.reservationService.createReservationPayment(
           id,
           info.payment
         );
         newReservation.payment = newReservationPayment;
-      }
+      }*/
       reservationInfo.push(newReservation);
     }
 
@@ -150,7 +150,7 @@ export class ReservationController extends BaseController {
       data
     );
 
-    if (data.payment) {
+    /*if (data.payment) {
       const newReservationPayment = await this.reservationService.updateReservationPayment(
         reservationId,
         data.payment
@@ -163,7 +163,7 @@ export class ReservationController extends BaseController {
 
     for (const info of reservationPayment) {
       newReservation.payment = info;
-    }
+    }*/
 
     const response: SignUpReservationResponse = {
       status: 201,
@@ -184,7 +184,8 @@ export class ReservationController extends BaseController {
       JSON.stringify(reservationData)
     );
     const { userId } = bodyData;
-    const reservationPayment = await this.reservationService.getReservationPayment(
+
+    /*const reservationPayment = await this.reservationService.getReservationPayment(
       reservationId
     );
 
@@ -195,7 +196,7 @@ export class ReservationController extends BaseController {
           id
         );
       }
-    }
+    }*/
 
     const deleteReservation = await this.reservationService.deleteReservation(
       reservationId
