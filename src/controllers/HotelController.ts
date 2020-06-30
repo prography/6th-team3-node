@@ -210,6 +210,7 @@ export class HotelController extends BaseController {
     const reservation = await this.reservationService.getReservationsHotel(
       hotelId
     );
+
     const review = await this.reviewService.getReviews(hotelId);
 
     if (hotelPrice) {
