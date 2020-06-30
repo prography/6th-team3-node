@@ -6,7 +6,7 @@
   "author": "emiling <scopradical@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && node ./dist",
+    "build": "tsc",
     "start": "yarn prisma:generate && node ./dist",
     "start:dev": "NODE_ENV=development yarn prisma:generate && nodemon",
     "start:prod": "NODE_ENV=production yarn prisma:generate && yarn build",
