@@ -38,6 +38,7 @@ model Hotel {
   customers        User[]        @relation(references: [id])
 
   @@map("hotel")
+  Review Review[]
 }
 
 model Monitoring {
@@ -104,6 +105,7 @@ model User {
 
   @@map("user")
 
+  Review Review[]
 }
 
 model Pet {
@@ -141,6 +143,20 @@ model Reservation {
   pet        Pet       @relation(fields: [petId], references: [id])
 
   @@map("reservation")
+}
+
+model Review {
+  id        Int       @default(autoincrement()) @id
+  rating    Int?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at") @updatedAt
+  content   String?
+  userId    Int       @map("user_id")
+  hotelId   Int       @map("hotel_id")
+  user      User      @relation(fields: [userId], references: [id])
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
+  @@map("review")
 }
 
 enum Gender {
