@@ -1,5 +1,5 @@
 datasource mysql {
-  url      = env("DATABASE_URL")
+  url = "***"
   provider = "mysql"
 }
 
@@ -138,11 +138,23 @@ model Reservation {
   endDate    DateTime? @map("end_date")
   pickupTime String?   @map("pick_up_time")
   request    String?
+  payment    Payment?
   user       User      @relation(fields: [userId], references: [id])
   hotel      Hotel     @relation(fields: [hotelId], references: [id])
   pet        Pet       @relation(fields: [petId], references: [id])
 
   @@map("reservation")
+}
+
+model Payment {
+  id            Int         @default(autoincrement()) @id
+  reservationId Int         @map("reservation_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime?   @map("updated_at") @updatedAt
+  name          String?
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  @@map("reservation_payment")
 }
 
 model Review {

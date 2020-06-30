@@ -17,6 +17,7 @@ import { HotelService } from '../services/HotelService';
 import { MonitoringService } from '../services/MonitoringService';
 import { ServiceService } from '../services/ServiceService';
 import { ReservationService } from '../services/ReservationService';
+import { ReviewService } from '../services/ReviewService';
 
 export interface SignUpHotelRequest {
   data: HotelData;
@@ -64,6 +65,7 @@ export class HotelController extends BaseController {
   private monitoringService: MonitoringService;
   private serviceService: ServiceService;
   private reservationService: ReservationService;
+  private reviewService: ReviewService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
@@ -71,6 +73,7 @@ export class HotelController extends BaseController {
     this.monitoringService = new MonitoringService();
     this.serviceService = new ServiceService();
     this.reservationService = new ReservationService();
+    this.reviewService = new ReviewService();
   }
   @Get()
   public async allHotels(@Req() req: any) {
@@ -208,6 +211,8 @@ export class HotelController extends BaseController {
       hotelId
     );
 
+    const review = await this.reviewService.getReviews(hotelId);
+
     if (hotelPrice) {
       for (const info of hotelPrice) {
         const { id } = info;
@@ -247,6 +252,12 @@ export class HotelController extends BaseController {
         const deleteReservation = await this.reservationService.deleteReservation(
           id
         );
+      }
+    }
+    if (review) {
+      for (const info of review) {
+        const { id } = info;
+        const deleteReview = await this.reviewService.deleteReview(id);
       }
     }
 
