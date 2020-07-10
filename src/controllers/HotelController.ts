@@ -1,18 +1,16 @@
 import { BaseController } from './BaseController';
-import { PrismaClient, Price } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import {
   JsonController,
   Get,
   Post,
   Param,
-  HttpError,
   Delete,
   Put,
   Req,
   Body,
 } from 'routing-controllers';
 
-import Logger from '../loaders/logger';
 import { HotelService } from '../services/HotelService';
 import { MonitoringService } from '../services/MonitoringService';
 import { ServiceService } from '../services/ServiceService';
@@ -55,7 +53,7 @@ export interface HotelData {
   pageLink: string;
   mediumCriteria: number;
   largeCriteria: number;
-  prices: Price[];
+  prices: any[];
 }
 
 @JsonController('/hotels')
