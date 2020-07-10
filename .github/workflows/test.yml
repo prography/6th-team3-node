@@ -37,12 +37,10 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
       - name: Deploy to ElasticBeanstalk
-        uses: einaregilsson/beanstalk-deploy@v10
+        uses: hmanzur/actions-aws-eb@v1.0.0
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: mypetmily
-          environment_name: mypetmily-release
-          version_label: 12345
-          use_existing_version_if_available: true
-          region: ap-northeast-2
+          command: 'deploy ${{ secrets.ENVIRONMENT_NAME }}'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'ap-northeast-2'
