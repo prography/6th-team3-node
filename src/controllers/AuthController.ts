@@ -73,7 +73,7 @@ export class AuthController extends BaseController {
   }
 
   @Get('/kakao/login/callback')
-  @Redirect('/api/auth/kakao/code=:code')
+  @Redirect('/auth/kakao/code=:code')
   public kakaoCallback(@QueryParam('code') code: string) {
     return { code };
   }
