@@ -43,4 +43,5 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: mypetmily
           environment_name: mypetmily-release
+          version_label: 0.2.0
           region: ap-northeast-2
