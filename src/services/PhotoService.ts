@@ -6,6 +6,8 @@ import config from '../config';
 import moment from 'moment';
 import AWS from 'aws-sdk';
 
+type Target = 'PET' | 'USER' | 'HOTEL';
+
 export class PhotoService extends BaseService {
   private databaseClient: PrismaClient;
   private S3: AWS.S3;
@@ -39,5 +41,15 @@ export class PhotoService extends BaseService {
         return resolve(data);
       });
     });
+  }
+
+  public async getUserPhoto(userId: number) {
+    const target: Target = 'USER';
+    // TODO: 사진 수정 미구현
+    const result = await this.databaseClient.photo.findMany({
+      where: { target, targetId: userId },
+    });
+    console.log(52, result[result.length - 1]);
+    return result[result.length - 1];
   }
 }
