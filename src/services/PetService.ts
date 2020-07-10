@@ -19,7 +19,7 @@ export class PetService extends BaseService {
     data: PetData,
     registerData: PetRegisterData
   ) {
-    const result = await this.databaseClient.pet.create({
+    const petResult = await this.databaseClient.pet.create({
       data: {
         name: data.petName,
         registerNum: registerData.registerNumber,
@@ -31,7 +31,14 @@ export class PetService extends BaseService {
         owner: { connect: { id: userId } },
       },
     });
-    console.log(32, result);
+    const photoResult = await this.databaseClient.photo.create({
+      data: {
+        url: data.photoUrl,
+        target: 'PET',
+        targetId: petResult.id,
+      },
+    });
+    const result = { ...petResult, ...photoResult };
     return result;
   }
 }

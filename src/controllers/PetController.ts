@@ -19,6 +19,7 @@ export interface PetData {
   petName: string;
   registerNumber: string;
   birthYear: number;
+  photoUrl: string;
 }
 
 export interface SignUpPetResponse {
@@ -44,7 +45,6 @@ export class PetController extends BaseController {
     return 'Hello! This is pets🐶 page';
   }
 
-  //TODO: Error Handling 로직 추가하기
   @Post('/')
   @UseBefore(jwtMiddleware)
   public async createPet(@Body() petData: string) {
