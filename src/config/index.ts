@@ -30,9 +30,6 @@ const config = {
   logger: {
     level: process.env.LOG_LEVEL || 'silly',
   },
-  api: {
-    prefix: '/api',
-  },
   auth: {
     kakao: {
       restApiKey: process.env.KAKAO_REST_API_KEY,
