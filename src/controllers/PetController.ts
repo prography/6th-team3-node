@@ -14,6 +14,7 @@ import {
   UploadedFiles,
   Req,
 } from 'routing-controllers';
+import { PhotoService } from '../services/PhotoService';
 export interface SignUpPetRequest {
   data: PetData[];
 }
@@ -26,6 +27,7 @@ export interface PetData {
   breed: string;
   isNeutered: string;
   gender: string;
+  weight?: number;
 }
 
 export interface PetResponse {
@@ -48,20 +50,32 @@ export class PetController extends BaseController {
   private databaseClient: PrismaClient;
   private petService: PetService;
   private petProvider: PetProvider;
+  private photoService: PhotoService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
     this.petService = new PetService();
+    this.photoService = new PhotoService();
     this.petProvider = new PetProvider();
   }
+
   @Get('/')
-  public index() {
-    return 'Hello! This is pets🐶 page';
+  @UseBefore(jwtMiddleware)
+  public async getPetInfo(@Req() request: express.Request) {
+    const userInfo: JwtUserData = request.user;
+    const myPets = await this.petService.getUserPet(userInfo.id);
+    console.log(64, myPets);
+    const response: PetResponse = {
+      status: 'success',
+      message: 'Succeed in getting pet information',
+      data: myPets,
+    };
+    return response;
   }
 
   @Post('/')
   @UseBefore(jwtMiddleware)
-  public async createPet(
+  public async createPetInfo(
     @UploadedFiles('photo') files: File[],
     @Body() data: PetData[],
     @Req() request: express.Request
@@ -74,13 +88,13 @@ export class PetController extends BaseController {
     for (const info of petData) {
       console.log(79, userInfo);
       const newPet = await this.petService.createUserPet(userInfo.id, info);
-
+      const petPhoto = await this.pho;
       petInfo.push(newPet);
     }
 
     const response: PetResponse = {
       status: 'success',
-      message: 'Success User Pet Creation',
+      message: 'Succeed in creating pet information',
       data: petInfo,
     };
 
@@ -88,7 +102,7 @@ export class PetController extends BaseController {
   }
 
   @Post('/check')
-  public async checkPet(@Body() petData: PetData) {
+  public async checkPetInfo(@Body() petData: PetData) {
     const { registerNumber } = petData;
     const registerData: PetRegisterData = await this.petProvider.getRegisterPetData(
       registerNumber
@@ -97,7 +111,7 @@ export class PetController extends BaseController {
 
     const response: PetResponse = {
       status: 'success',
-      message: 'Success check registered pet',
+      message: 'Succeed in checking registered pet information',
       data: registerData,
     };
 

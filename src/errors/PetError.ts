@@ -1,3 +1,5 @@
+// 이미 회원 가입된 이메일로 다시 회원가입을 신청하려고 할 때(409 Conflict)
+import { HttpError } from 'routing-controllers';
 import { NotFoundError } from 'routing-controllers';
 import { ErrorResponse } from '../errors/BaseError';
 
@@ -11,6 +13,20 @@ export class NotRegisteredPetError extends NotFoundError {
     return {
       error: this.message,
       message: 'Please recheck your pet register number,',
+    };
+  }
+}
+
+export class DuplicatedPetName extends HttpError {
+  constructor() {
+    super(409, 'Already created pet');
+    Object.setPrototypeOf(this, DuplicatedPetName.prototype);
+  }
+
+  public toJSON(): ErrorResponse {
+    return {
+      error: this.message,
+      message: 'Please recheck if your pet is registered alreay',
     };
   }
 }
