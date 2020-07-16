@@ -38,7 +38,7 @@ export interface HotelData {
   address: string;
   addressDetail: string;
   zipcode: string;
-  latiude: number;
+  latitude: number;
   longitude: number;
   weekOpenTime: string;
   weekCloseTime: string;
