@@ -64,6 +64,7 @@ export default function jwtMiddleware(
     id,
     email,
   };
-  request.body.user = responseData;
+
+  request.user = responseData;
   return next();
 }
