@@ -1,5 +1,5 @@
 import { BaseService } from './BaseService';
-import { PrismaClient, Price } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { HotelData } from '../controllers/HotelController';
 
 export class HotelService extends BaseService {
@@ -69,7 +69,7 @@ export class HotelService extends BaseService {
     return result;
   }
 
-  public async createHotelPrice(hotelId: number, data: Price) {
+  public async createHotelPrice(hotelId: number, data: any) {
     const result = await this.databaseClient.price.create({
       data: {
         day: data.day,
@@ -83,7 +83,7 @@ export class HotelService extends BaseService {
     return result;
   }
 
-  public async updateHotelPrice(hotelId: number, data: Price) {
+  public async updateHotelPrice(hotelId: number, data: any) {
     const result = await this.databaseClient.price.update({
       where: { id: data.id },
       data: {

@@ -11,6 +11,7 @@ import {
   BodyParam,
 } from 'routing-controllers';
 import { UserService } from '../services/UserService';
+import { PhotoService } from '../services/PhotoService';
 
 export interface OauthSignUpData {
   nickname: string;
@@ -26,6 +27,7 @@ export interface GeneralSignUpData {
   nickname: string;
   phoneNumber: string;
   email: string;
+  photoUrl: string;
   password: string;
 }
 
@@ -37,7 +39,7 @@ export interface UserData {
   id: number;
   name: string;
   phoneNumber: string;
-  // profileImage: string;
+  profileImage: string;
 }
 
 export interface JwtSignUpResponse {
@@ -52,31 +54,34 @@ export interface JwtSignUpResponse {
 @JsonController('/user')
 export class UserController extends BaseController {
   private userService: UserService;
+  private photoService: PhotoService;
+
   constructor() {
     super();
     this.userService = new UserService();
+    this.photoService = new PhotoService();
   }
 
   @Get('/')
   @UseBefore(jwtMiddleware)
   public async index(@BodyParam('user') user: JwtUserData) {
-    //TODO: header로 온 JWT validation
-    // const jwtData = decodeJwtToken(authToken);
     const userData = await this.userService.findUserByEmail(user.email);
     if (!userData) throw new UserNotFoundError(user.email);
-    console.log(48, userData);
 
-    //TODO: profile photo logic 구현하기
+    const photoData = await this.photoService.getUserPhoto(userData.id);
+    const profileImage = !photoData ? 'empty' : photoData.url;
+
     const response: UserData = {
       id: userData.id,
       name: userData.name!,
       phoneNumber: userData.phoneNumber!,
-      // profileImage:
+      profileImage: profileImage!,
     };
+
     return response;
   }
 
-  //TODO: 닉네임 중복확인, PUT/PATCH으로 처리해야하나?
+  //TODO: 닉네임 중복확인
   //TODO: signUpData에 모든 정보가 들어왔는지 Validation check
   @Post('/')
   public async createUser(@Body() signUpData: string) {

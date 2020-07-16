@@ -28,7 +28,14 @@ export class PetService extends BaseService {
         owner: { connect: { id: userId } },
       },
     });
-    console.log(32, result);
+    const photoResult = await this.databaseClient.photo.create({
+      data: {
+        url: data.photoUrl,
+        target: 'PET',
+        targetId: petResult.id,
+      },
+    });
+    const result = { ...petResult, ...photoResult };
     return result;
   }
 }

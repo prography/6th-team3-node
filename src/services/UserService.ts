@@ -19,10 +19,10 @@ export class UserService extends BaseService {
   }
 
   public async createGeneralUser(signUpData: GeneralSignUpData) {
-    const { nickname, phoneNumber, email, password } = signUpData;
+    const { nickname, phoneNumber, email, password, photoUrl } = signUpData;
     const safePassword = await hashPassword(password);
     console.log(password, safePassword);
-    const result = await this.databaseClient.user.create({
+    const userResult = await this.databaseClient.user.create({
       data: {
         name: nickname,
         phoneNumber: phoneNumber,
@@ -30,6 +30,14 @@ export class UserService extends BaseService {
         password: safePassword,
       },
     });
+    const photoResult = await this.databaseClient.photo.create({
+      data: {
+        url: photoUrl,
+        target: 'USER',
+        targetId: userResult.id,
+      },
+    });
+    const result = { ...userResult, ...photoResult };
     return result;
   }
 

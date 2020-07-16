@@ -1,5 +1,5 @@
 import { ErrorResponse } from '../errors/BaseError';
-import { BadRequestError } from 'routing-controllers';
+import { BadRequestError, InternalServerError } from 'routing-controllers';
 
 export class NotSupportedTypeError extends BadRequestError {
   private mimeType: string;
@@ -13,6 +13,19 @@ export class NotSupportedTypeError extends BadRequestError {
     return {
       error: this.message,
       message: `${this.mimeType} is not supported image file format`,
+    };
+  }
+}
+
+export class UploadImageError extends InternalServerError {
+  constructor() {
+    super('Upload Image Error');
+    Object.setPrototypeOf(this, NotSupportedTypeError.prototype);
+  }
+  public toJSON(): ErrorResponse {
+    return {
+      error: this.message,
+      message: 'Error occured during upload image file on server',
     };
   }
 }
