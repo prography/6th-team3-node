@@ -36,6 +36,7 @@ model Hotel {
   prices           Price[]
   reservations     Reservation[]
   customers        User[]        @relation(references: [id])
+
   @@map("hotel")
   Review Review[]
 }
@@ -47,6 +48,7 @@ model Monitoring {
   updatedAt DateTime? @map("updated_at") @updatedAt
   name      String?
   hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
   @@map("hotel_monitoring_type")
 }
 
@@ -57,6 +59,7 @@ model Service {
   updatedAt DateTime? @map("updated_at") @updatedAt
   name      String?
   hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
   @@map("hotel_service")
 }
 
@@ -70,6 +73,7 @@ model Price {
   size      Size?
   price     Int?
   hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
   @@map("price")
 }
 
@@ -80,6 +84,7 @@ model Photo {
   url       String?
   target    Target?
   targetId  Int?      @map("target_id")
+
   @@map("photo")
 }
 
@@ -97,7 +102,9 @@ model User {
   pets           Pet[]
   favoriteHotels Hotel[]       @relation(references: [id])
   Reservation    Reservation[]
+
   @@map("user")
+
   Review Review[]
 }
 
@@ -116,6 +123,7 @@ model Pet {
   gender       Gender?
   owner        User?         @relation(fields: [userId], references: [id])
   reservations Reservation[]
+
   @@map("pet")
 }
 
@@ -130,21 +138,11 @@ model Reservation {
   endDate    DateTime? @map("end_date")
   pickupTime String?   @map("pick_up_time")
   request    String?
-  payment    Payment?
   user       User      @relation(fields: [userId], references: [id])
   hotel      Hotel     @relation(fields: [hotelId], references: [id])
   pet        Pet       @relation(fields: [petId], references: [id])
-  @@map("reservation")
-}
 
-model Payment {
-  id            Int         @default(autoincrement()) @id
-  reservationId Int         @map("reservation_id")
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime?   @map("updated_at") @updatedAt
-  name          String?
-  reservation   Reservation @relation(fields: [reservationId], references: [id])
-  @@map("reservation_payment")
+  @@map("reservation")
 }
 
 model Review {
@@ -157,12 +155,14 @@ model Review {
   hotelId   Int       @map("hotel_id")
   user      User      @relation(fields: [userId], references: [id])
   hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
   @@map("review")
 }
 
 enum Gender {
   MALE    @map("수컷")
   FEMAIL  @map("암컷")
+
   @@map("gender")
 }
 
@@ -170,6 +170,7 @@ enum Target {
   PET    @map("pet")
   USER   @map("user")
   HOTEL  @map("hotel")
+
   @@map("target")
 }
 
@@ -177,6 +178,7 @@ enum Size {
   SMALL   @map("small")
   MEDIUM  @map("medium")
   LARGE   @map("large")
+
   @@map("size")
 }
 
@@ -185,5 +187,6 @@ enum Provider {
   NAVER     @map("naver")
   GOOGLE    @map("google")
   FACEBOOK  @map("facebook")
+
   @@map("provider")
 }
