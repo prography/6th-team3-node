@@ -4,14 +4,12 @@ import config from '../config';
 import { BaseProvider } from './BaseProvider';
 import xml2js, { Parser } from 'xml2js';
 
-type Gender = 'MALE' | 'FEMALE';
-
 export interface PetRegisterData {
   registerNumber: string;
   rfidCode: string;
   breed: string;
   isNeutered: boolean;
-  gender: Gender;
+  gender: string;
 }
 
 export class PetProvider extends BaseProvider {
@@ -36,7 +34,7 @@ export class PetProvider extends BaseProvider {
             rfidCode: bodyData['rfidCd'][0],
             breed: bodyData['kindNm'][0],
             isNeutered: bodyData['neuterYn'][0] === '중성' ? true : false,
-            gender: bodyData['sexNm'][0] === '수컷' ? 'MALE' : 'FEMALE',
+            gender: bodyData['sexNm'][0] === '수컷' ? 'male' : 'female',
           };
           console.log(40, response);
           resolve(response);
