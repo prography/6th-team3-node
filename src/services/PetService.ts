@@ -14,20 +14,17 @@ export class PetService extends BaseService {
     this.databaseClient = new PrismaClient();
   }
 
-  public async createUserPet(
-    userId: number,
-    data: PetData,
-    registerData: PetRegisterData
-  ) {
-    const petResult = await this.databaseClient.pet.create({
+  public async createUserPet(userId: number, petData: PetData) {
+    petData.gender = petData.gender === '수컷' ? 'MALE' : 'FEMAIL';
+    const result = await this.databaseClient.pet.create({
       data: {
-        name: data.petName,
-        registerNum: registerData.registerNumber,
-        rfidCode: registerData.rfidCode,
-        breed: registerData.breed,
-        isNeutered: registerData.isNeutered,
-        gender: registerData.gender as Gender,
-        year: data.birthYear,
+        name: petData.petName,
+        registerNum: petData.registerNumber,
+        rfidCode: petData.rfidCode,
+        breed: petData.breed,
+        isNeutered: petData.isNeutered === 'true',
+        gender: petData.gender as Gender,
+        year: parseInt(petData.birthYear),
         owner: { connect: { id: userId } },
       },
     });

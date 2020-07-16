@@ -1,31 +1,46 @@
+import express from 'express';
 import { BaseController } from './BaseController';
 import { PrismaClient } from '@prisma/client';
-import jwtMiddleware from '../utils/AuthHelper';
+import jwtMiddleware, { JwtUserData } from '../utils/AuthHelper';
 import { PetProvider, PetRegisterData } from '../providers/PetProvider';
 import { PetService } from '../services/PetService';
+import { NotRegisteredPetError } from '../errors/PetError';
 import {
   JsonController,
   Get,
   Post,
   UseBefore,
   Body,
+  UploadedFiles,
+  Req,
 } from 'routing-controllers';
 export interface SignUpPetRequest {
-  userId: number;
   data: PetData[];
 }
 
 export interface PetData {
   petName: string;
   registerNumber: string;
-  birthYear: number;
-  photoUrl: string;
+  rfidCode: string;
+  birthYear: string;
+  breed: string;
+  isNeutered: string;
+  gender: string;
 }
 
-export interface SignUpPetResponse {
+export interface PetResponse {
   status: string;
   message: string;
-  data: any[];
+  data: any | any[];
+}
+
+export interface PhotoUploadRequest {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: Buffer;
+  size: number;
 }
 
 @JsonController('/pet')
@@ -41,35 +56,49 @@ export class PetController extends BaseController {
   }
   @Get('/')
   public index() {
-    // TODO: userId JWT decode해서 가져오는 게 나을까?
     return 'Hello! This is pets🐶 page';
   }
 
   @Post('/')
   @UseBefore(jwtMiddleware)
-  public async createPet(@Body() petData: string) {
-    const bodyData: SignUpPetRequest = JSON.parse(JSON.stringify(petData));
+  public async createPet(
+    @UploadedFiles('photo') files: File[],
+    @Body() data: PetData[],
+    @Req() request: express.Request
+  ) {
+    const petData: PetData[] = JSON.parse(JSON.stringify(data))['data'];
+    const userInfo: JwtUserData = request.user;
 
-    // TODO: userId JWT decode해서 가져오는 게 나을까?
-    const { userId, data } = bodyData;
     const petInfo = [];
 
-    for (const info of data) {
-      const registerData: PetRegisterData = await this.petProvider.getRegisterPetData(
-        info.registerNumber
-      );
-      const newPet = await this.petService.createUserPet(
-        userId,
-        info,
-        registerData
-      );
+    for (const info of petData) {
+      console.log(79, userInfo);
+      const newPet = await this.petService.createUserPet(userInfo.id, info);
+
       petInfo.push(newPet);
     }
 
-    const response: SignUpPetResponse = {
+    const response: PetResponse = {
       status: 'success',
       message: 'Success User Pet Creation',
       data: petInfo,
+    };
+
+    return response;
+  }
+
+  @Post('/check')
+  public async checkPet(@Body() petData: PetData) {
+    const { registerNumber } = petData;
+    const registerData: PetRegisterData = await this.petProvider.getRegisterPetData(
+      registerNumber
+    );
+    if (!registerData) throw new NotRegisteredPetError();
+
+    const response: PetResponse = {
+      status: 'success',
+      message: 'Success check registered pet',
+      data: registerData,
     };
 
     return response;
