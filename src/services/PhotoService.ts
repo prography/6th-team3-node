@@ -73,4 +73,37 @@ export class PhotoService extends BaseService {
 
     return { photoUrl: result.url };
   }
+
+  public async createUserPhoto(
+    userId: number,
+    file: PhotoUploadRequest | string
+  ) {
+    if (typeof file === 'string') {
+      const result = await this.databaseClient.photo.create({
+        data: {
+          target: 'USER',
+          targetId: userId,
+          url: file,
+        },
+      });
+      return result;
+    }
+
+    if (!this.allowedMimeTypes.includes(file.mimetype))
+      throw new NotSupportedTypeError(file.mimetype);
+
+    const upload = await this.uploadPhotoS3('user', file);
+
+    if (upload instanceof Error) throw new UploadImageError();
+
+    const result = await this.databaseClient.photo.create({
+      data: {
+        target: 'USER',
+        targetId: userId,
+        url: upload['Location'],
+      },
+    });
+
+    return { photoUrl: result.url };
+  }
 }
