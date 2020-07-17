@@ -37,34 +37,18 @@ export class PetService extends BaseService {
 
   public async createUserPet(userId: number, petData: PetData) {
     petData.gender = petData.gender === '수컷' ? 'MALE' : 'FEMAIL';
-    let result;
-    try {
-      result = await this.databaseClient.pet.create({
-        data: {
-          name: petData.petName,
-          registerNum: petData.registerNumber,
-          rfidCode: petData.rfidCode,
-          breed: petData.breed,
-          isNeutered: petData.isNeutered === 'true',
-          gender: petData.gender as Gender,
-          year: parseInt(petData.birthYear),
-          owner: { connect: { id: userId } },
-        },
-      });
-    } catch (e) {
-      throw new 
-    }
-
-    /*
-    const photoResult = await this.databaseClient.photo.create({
+    const result = await this.databaseClient.pet.create({
       data: {
-        url: data.photoUrl,
-        target: 'PET',
-        targetId: petResult.id,
+        name: petData.petName,
+        registerNum: petData.registerNumber,
+        rfidCode: petData.rfidCode,
+        breed: petData.breed,
+        isNeutered: petData.isNeutered === 'true',
+        gender: petData.gender as Gender,
+        year: parseInt(petData.birthYear),
+        owner: { connect: { id: userId } },
       },
     });
-    const result = { ...petResult, ...photoResult };
-    */
     return result;
   }
 }

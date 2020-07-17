@@ -28,6 +28,7 @@ export interface PetData {
   isNeutered: string;
   gender: string;
   weight?: number;
+  photoUrl?: string;
 }
 
 export interface PetResponse {
@@ -76,7 +77,7 @@ export class PetController extends BaseController {
   @Post('/')
   @UseBefore(jwtMiddleware)
   public async createPetInfo(
-    @UploadedFiles('photo') files: File[],
+    @UploadedFiles('photo') files: PhotoUploadRequest[],
     @Body() data: PetData[],
     @Req() request: express.Request
   ) {
@@ -85,11 +86,18 @@ export class PetController extends BaseController {
 
     const petInfo = [];
 
-    for (const info of petData) {
-      console.log(79, userInfo);
-      const newPet = await this.petService.createUserPet(userInfo.id, info);
-      const petPhoto = await this.pho;
-      petInfo.push(newPet);
+    for (const idx in petData) {
+      const newPet = await this.petService.createUserPet(
+        userInfo.id,
+        petData[idx]
+      );
+      const petPhoto = await this.photoService.createPetPhoto(
+        newPet.id,
+        files[idx]
+      );
+      const info = { ...newPet, ...petPhoto };
+      console.log(98, info);
+      petInfo.push(info);
     }
 
     const response: PetResponse = {

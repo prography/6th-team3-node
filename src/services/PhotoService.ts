@@ -2,6 +2,7 @@
 import { BaseService } from './BaseService';
 import { PrismaClient } from '@prisma/client';
 import { PhotoUploadRequest } from '../controllers/PhotoController';
+import { NotSupportedTypeError, UploadImageError } from '../errors/PhotoError';
 import config from '../config';
 import moment from 'moment';
 import AWS from 'aws-sdk';
@@ -10,12 +11,13 @@ type Target = 'PET' | 'USER' | 'HOTEL';
 
 export class PhotoService extends BaseService {
   private databaseClient: PrismaClient;
+  private allowedMimeTypes: string[];
   private S3: AWS.S3;
 
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
-
+    this.allowedMimeTypes = ['image/png', 'image/jpeg', 'image/bmp'];
     this.S3 = new AWS.S3({
       accessKeyId: config.auth.aws.accessKey,
       secretAccessKey: config.auth.aws.secretKey,
@@ -51,5 +53,24 @@ export class PhotoService extends BaseService {
     });
     console.log(52, result[result.length - 1]);
     return result[result.length - 1];
+  }
+
+  public async createPetPhoto(petId: number, file: PhotoUploadRequest) {
+    if (!this.allowedMimeTypes.includes(file.mimetype))
+      throw new NotSupportedTypeError(file.mimetype);
+
+    const upload = await this.uploadPhotoS3('pet', file);
+
+    if (upload instanceof Error) throw new UploadImageError();
+
+    const result = await this.databaseClient.photo.create({
+      data: {
+        target: 'PET',
+        targetId: petId,
+        url: upload['Location'],
+      },
+    });
+
+    return { photoUrl: result.url };
   }
 }

@@ -1,0 +1,192 @@
+datasource mysql {
+  url = "***"
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Hotel {
+  id               Int           @default(autoincrement()) @id
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime?     @map("updated_at") @updatedAt
+  name             String?
+  description      String?
+  address          String?
+  addressDetail    String?       @map("address_detail")
+  zipcode          String?
+  latitude         Float?
+  longitude        Float?
+  weekOpenTime     String?       @map("week_open_time")
+  weekCloseTime    String?       @map("week_close_time")
+  satOpenTime      String?       @map("sat_open_time")
+  satCloseTime     String?       @map("sat_close_time")
+  sunOpenTime      String?       @map("sun_open_time")
+  sunCloseTime     String?       @map("sun_close_time")
+  phoneNumber      String?       @map("phone_number")
+  monitorAvailable Boolean?      @map("monitor_available")
+  isNeuteredOnly   Boolean?      @map("is_neutered_only")
+  maxDogSize       Int?          @map("max_dog_size")
+  pageLink         String?       @map("page_link")
+  mediumCriteria   Int?          @map("medium_criteria") //소형견과 중형견을 나누는 기준
+  largeCriteria    Int?          @map("largs_criteria") //중형견과 대형견을 나누는 기준
+  monitorings      Monitoring[]
+  services         Service[]
+  prices           Price[]
+  reservations     Reservation[]
+  customers        User[]        @relation(references: [id])
+
+  @@map("hotel")
+  Review Review[]
+}
+
+model Monitoring {
+  id        Int       @default(autoincrement()) @id
+  hotelId   Int       @map("hotel_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at") @updatedAt
+  name      String?
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
+  @@map("hotel_monitoring_type")
+}
+
+model Service {
+  id        Int       @default(autoincrement()) @id
+  hotelId   Int       @map("hotel_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at") @updatedAt
+  name      String?
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
+  @@map("hotel_service")
+}
+
+model Price {
+  id        Int       @default(autoincrement()) @id
+  hotelId   Int       @map("hotel_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at") @updatedAt
+  day       String?
+  weight    Int?
+  size      Size?
+  price     Int?
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
+  @@map("price")
+}
+
+model Photo {
+  id        Int       @default(autoincrement()) @id
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at") @updatedAt
+  url       String?
+  target    Target?
+  targetId  Int?      @map("target_id")
+
+  @@map("photo")
+}
+
+model User {
+  id             Int           @default(autoincrement()) @id
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime?     @map("updated_at") @updatedAt
+  name           String?       @unique
+  email          String        @unique
+  password       String?
+  provider       Provider?
+  accessToken    String?       @map("access_token")
+  refreshToken   String?       @map("refresh_token")
+  phoneNumber    String?       @map("phone_number")
+  pets           Pet[]
+  favoriteHotels Hotel[]       @relation(references: [id])
+  Reservation    Reservation[]
+
+  @@map("user")
+
+  Review Review[]
+}
+
+model Pet {
+  id           Int           @default(autoincrement()) @id
+  userId       Int?          @map("user_id")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime?     @map("updated_at") @updatedAt
+  name         String?
+  year         Int?
+  weight       Int?
+  registerNum  String?       @map("register_num")
+  rfidCode     String?       @map("rfid_cd")
+  breed        String?
+  isNeutered   Boolean?      @map("is_neutered")
+  gender       Gender?
+  owner        User?         @relation(fields: [userId], references: [id])
+  reservations Reservation[]
+
+  @@map("pet")
+}
+
+model Reservation {
+  id         Int       @default(autoincrement()) @id
+  userId     Int       @map("user_id")
+  hotelId    Int       @map("hotel_id")
+  petId      Int       @map("pet_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime? @map("updated_at") @updatedAt
+  startDate  DateTime? @map("start_date")
+  endDate    DateTime? @map("end_date")
+  pickupTime String?   @map("pick_up_time")
+  request    String?
+  user       User      @relation(fields: [userId], references: [id])
+  hotel      Hotel     @relation(fields: [hotelId], references: [id])
+  pet        Pet       @relation(fields: [petId], references: [id])
+
+  @@map("reservation")
+}
+
+model Review {
+  id        Int       @default(autoincrement()) @id
+  rating    Int?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at") @updatedAt
+  content   String?
+  userId    Int       @map("user_id")
+  hotelId   Int       @map("hotel_id")
+  user      User      @relation(fields: [userId], references: [id])
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+
+  @@map("review")
+}
+
+enum Gender {
+  MALE    @map("수컷")
+  FEMAIL  @map("암컷")
+
+  @@map("gender")
+}
+
+enum Target {
+  PET    @map("pet")
+  USER   @map("user")
+  HOTEL  @map("hotel")
+
+  @@map("target")
+}
+
+enum Size {
+  SMALL   @map("small")
+  MEDIUM  @map("medium")
+  LARGE   @map("large")
+
+  @@map("size")
+}
+
+enum Provider {
+  KAKAO     @map("kakao")
+  NAVER     @map("naver")
+  GOOGLE    @map("google")
+  FACEBOOK  @map("facebook")
+
+  @@map("provider")
+}
