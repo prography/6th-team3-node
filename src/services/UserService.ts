@@ -1,6 +1,7 @@
 // Database 접근하기
 import { BaseService } from './BaseService';
 import { PrismaClient } from '@prisma/client';
+import { DuplicatedInformation } from '../errors/UserError';
 import {
   OauthSignUpData,
   GeneralSignUpData,
@@ -9,6 +10,15 @@ import { UserToken, UserInfo } from '../providers/KakaoProvider';
 import { hashPassword } from '../utils/AuthHelper';
 
 type Provider = 'KAKAO' | 'NAVER' | 'GOOGLE' | 'FACEBOOK';
+
+export interface PhotoUploadRequest {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: Buffer;
+  size: number;
+}
 
 export class UserService extends BaseService {
   private databaseClient: PrismaClient;
@@ -19,26 +29,23 @@ export class UserService extends BaseService {
   }
 
   public async createGeneralUser(signUpData: GeneralSignUpData) {
-    const { nickname, phoneNumber, email, password, photoUrl } = signUpData;
+    console.log(34, signUpData);
+    const { nickname, phoneNumber, email, password } = signUpData;
     const safePassword = await hashPassword(password);
-    console.log(password, safePassword);
-    const userResult = await this.databaseClient.user.create({
-      data: {
-        name: nickname,
-        phoneNumber: phoneNumber,
-        email: email,
-        password: safePassword,
-      },
-    });
-    const photoResult = await this.databaseClient.photo.create({
-      data: {
-        url: photoUrl,
-        target: 'USER',
-        targetId: userResult.id,
-      },
-    });
-    const result = { ...userResult, ...photoResult };
-    return result;
+
+    try {
+      const userResult = await this.databaseClient.user.create({
+        data: {
+          name: nickname,
+          phoneNumber: phoneNumber,
+          email: email,
+          password: safePassword,
+        },
+      });
+      return userResult;
+    } catch (e) {
+      throw new DuplicatedInformation(e.message);
+    }
   }
 
   public async createOauthUser(

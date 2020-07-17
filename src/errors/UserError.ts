@@ -33,4 +33,20 @@ export class UserNotFoundError extends NotFoundError {
     };
   }
 }
+
+export class DuplicatedInformation extends HttpError {
+  private reason: string;
+  constructor(reason: string) {
+    super(409, 'Duplicated User Information');
+    this.reason = reason.split('\n\n')[1];
+    Object.setPrototypeOf(this, DuplicatedInformation.prototype);
+  }
+
+  public toJSON(): ErrorResponse {
+    return {
+      error: this.message,
+      message: this.reason,
+    };
+  }
+}
 // OAuth를 사용할 때 엑세스 토큰(access token)이 유효하지 않을 경우 (403 Forbidden)
