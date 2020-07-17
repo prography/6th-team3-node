@@ -4,7 +4,10 @@ import { PrismaClient } from '@prisma/client';
 import jwtMiddleware, { JwtUserData } from '../utils/AuthHelper';
 import { PetProvider, PetRegisterData } from '../providers/PetProvider';
 import { PetService } from '../services/PetService';
-import { NotRegisteredPetError } from '../errors/PetError';
+import {
+  NotRegisteredPetError,
+  DuplicatedPetNameError,
+} from '../errors/PetError';
 import {
   JsonController,
   Get,
@@ -85,8 +88,13 @@ export class PetController extends BaseController {
     const userInfo: JwtUserData = request.user;
 
     const petInfo = [];
+    const petNames = new Set();
 
     for (const idx in petData) {
+      const prevSize = petNames.size;
+      petNames.add(petData[idx].petName);
+      if (prevSize === petNames.size) throw new DuplicatedPetNameError();
+
       const newPet = await this.petService.createUserPet(
         userInfo.id,
         petData[idx]
@@ -95,8 +103,10 @@ export class PetController extends BaseController {
         newPet.id,
         files[idx]
       );
+
+      petNames.add(newPet.name);
+
       const info = { ...newPet, ...petPhoto };
-      console.log(98, info);
       petInfo.push(info);
     }
 

@@ -17,16 +17,16 @@ export class NotRegisteredPetError extends NotFoundError {
   }
 }
 
-export class DuplicatedPetName extends HttpError {
+export class DuplicatedPetNameError extends HttpError {
   constructor() {
-    super(409, 'Already created pet');
-    Object.setPrototypeOf(this, DuplicatedPetName.prototype);
+    super(409, 'Duplicated pet name');
+    Object.setPrototypeOf(this, DuplicatedPetNameError.prototype);
   }
 
   public toJSON(): ErrorResponse {
     return {
       error: this.message,
-      message: 'Please recheck if your pet is registered alreay',
+      message: 'Duplicated pet name is not allowed in same user',
     };
   }
 }
