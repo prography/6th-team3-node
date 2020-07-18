@@ -14,6 +14,27 @@ export class PetService extends BaseService {
     this.databaseClient = new PrismaClient();
   }
 
+  public async getUserPet(userId: number) {
+    const userPets = await this.databaseClient.pet.findMany({
+      where: { userId },
+    });
+    const result = [];
+    for (const info of userPets) {
+      const petInfo: PetData = {
+        petName: info.name!,
+        registerNumber: info.registerNum!,
+        rfidCode: info.rfidCode!,
+        birthYear: info.year!.toString(),
+        breed: info.breed!,
+        isNeutered: info.isNeutered!.toString(),
+        gender: info.gender!,
+        weight: info.weight!,
+      };
+      result.push(petInfo);
+    }
+    return result;
+  }
+
   public async createUserPet(userId: number, petData: PetData) {
     petData.gender = petData.gender === '수컷' ? 'MALE' : 'FEMAIL';
     const result = await this.databaseClient.pet.create({
@@ -28,14 +49,6 @@ export class PetService extends BaseService {
         owner: { connect: { id: userId } },
       },
     });
-    const photoResult = await this.databaseClient.photo.create({
-      data: {
-        url: data.photoUrl,
-        target: 'PET',
-        targetId: petResult.id,
-      },
-    });
-    const result = { ...petResult, ...photoResult };
     return result;
   }
 }

@@ -4,7 +4,10 @@ import { PrismaClient } from '@prisma/client';
 import jwtMiddleware, { JwtUserData } from '../utils/AuthHelper';
 import { PetProvider, PetRegisterData } from '../providers/PetProvider';
 import { PetService } from '../services/PetService';
-import { NotRegisteredPetError } from '../errors/PetError';
+import {
+  NotRegisteredPetError,
+  DuplicatedPetNameError,
+} from '../errors/PetError';
 import {
   JsonController,
   Get,
@@ -14,6 +17,7 @@ import {
   UploadedFiles,
   Req,
 } from 'routing-controllers';
+import { PhotoService } from '../services/PhotoService';
 export interface SignUpPetRequest {
   data: PetData[];
 }
@@ -26,6 +30,8 @@ export interface PetData {
   breed: string;
   isNeutered: string;
   gender: string;
+  weight?: number;
+  photoUrl?: string;
 }
 
 export interface PetResponse {
@@ -48,21 +54,33 @@ export class PetController extends BaseController {
   private databaseClient: PrismaClient;
   private petService: PetService;
   private petProvider: PetProvider;
+  private photoService: PhotoService;
   constructor() {
     super();
     this.databaseClient = new PrismaClient();
     this.petService = new PetService();
+    this.photoService = new PhotoService();
     this.petProvider = new PetProvider();
   }
+
   @Get('/')
-  public index() {
-    return 'Hello! This is pets🐶 page';
+  @UseBefore(jwtMiddleware)
+  public async getPetInfo(@Req() request: express.Request) {
+    const userInfo: JwtUserData = request.user;
+    const myPets = await this.petService.getUserPet(userInfo.id);
+    console.log(64, myPets);
+    const response: PetResponse = {
+      status: 'success',
+      message: 'Succeed in getting pet information',
+      data: myPets,
+    };
+    return response;
   }
 
   @Post('/')
   @UseBefore(jwtMiddleware)
-  public async createPet(
-    @UploadedFiles('photo') files: File[],
+  public async createPetInfo(
+    @UploadedFiles('photo') files: PhotoUploadRequest[],
     @Body() data: PetData[],
     @Req() request: express.Request
   ) {
@@ -70,17 +88,31 @@ export class PetController extends BaseController {
     const userInfo: JwtUserData = request.user;
 
     const petInfo = [];
+    const petNames = new Set();
 
-    for (const info of petData) {
-      console.log(79, userInfo);
-      const newPet = await this.petService.createUserPet(userInfo.id, info);
+    for (const idx in petData) {
+      const prevSize = petNames.size;
+      petNames.add(petData[idx].petName);
+      if (prevSize === petNames.size) throw new DuplicatedPetNameError();
 
-      petInfo.push(newPet);
+      const newPet = await this.petService.createUserPet(
+        userInfo.id,
+        petData[idx]
+      );
+      const petPhoto = await this.photoService.createPetPhoto(
+        newPet.id,
+        files[idx]
+      );
+
+      petNames.add(newPet.name);
+
+      const info = { ...newPet, ...petPhoto };
+      petInfo.push(info);
     }
 
     const response: PetResponse = {
       status: 'success',
-      message: 'Success User Pet Creation',
+      message: 'Succeed in creating pet information',
       data: petInfo,
     };
 
@@ -88,7 +120,7 @@ export class PetController extends BaseController {
   }
 
   @Post('/check')
-  public async checkPet(@Body() petData: PetData) {
+  public async checkPetInfo(@Body() petData: PetData) {
     const { registerNumber } = petData;
     const registerData: PetRegisterData = await this.petProvider.getRegisterPetData(
       registerNumber
@@ -97,7 +129,7 @@ export class PetController extends BaseController {
 
     const response: PetResponse = {
       status: 'success',
-      message: 'Success check registered pet',
+      message: 'Succeed in checking registered pet information',
       data: registerData,
     };
 

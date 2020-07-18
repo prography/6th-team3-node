@@ -1,3 +1,4 @@
+import express from 'express';
 import { BaseController } from './BaseController';
 import { UserNotFoundError } from '../errors/UserError';
 
@@ -8,7 +9,8 @@ import {
   Post,
   Body,
   UseBefore,
-  BodyParam,
+  Req,
+  UploadedFile,
 } from 'routing-controllers';
 import { UserService } from '../services/UserService';
 import { PhotoService } from '../services/PhotoService';
@@ -16,6 +18,7 @@ import { PhotoService } from '../services/PhotoService';
 export interface OauthSignUpData {
   nickname: string;
   phoneNumber: string;
+  profileImage: string | PhotoUploadRequest;
 }
 
 export interface OauthSignUpRequest {
@@ -27,7 +30,7 @@ export interface GeneralSignUpData {
   nickname: string;
   phoneNumber: string;
   email: string;
-  photoUrl: string;
+  photoUrl?: string;
   password: string;
 }
 
@@ -50,6 +53,15 @@ export interface JwtSignUpResponse {
   };
 }
 
+export interface PhotoUploadRequest {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: Buffer;
+  size: number;
+}
+
 //TODO: User 정보 수정(PUT) 그리고 탈퇴(DELETE) 구현
 @JsonController('/user')
 export class UserController extends BaseController {
@@ -64,7 +76,8 @@ export class UserController extends BaseController {
 
   @Get('/')
   @UseBefore(jwtMiddleware)
-  public async index(@BodyParam('user') user: JwtUserData) {
+  public async index(@Req() request: express.Request) {
+    const user: JwtUserData = request.user;
     const userData = await this.userService.findUserByEmail(user.email);
     if (!userData) throw new UserNotFoundError(user.email);
 
@@ -84,21 +97,25 @@ export class UserController extends BaseController {
   //TODO: 닉네임 중복확인
   //TODO: signUpData에 모든 정보가 들어왔는지 Validation check
   @Post('/')
-  public async createUser(@Body() signUpData: string) {
+  public async createUser(
+    @Body() signUpData: string,
+    @UploadedFile('profileImage') file: PhotoUploadRequest
+  ) {
     // TODO: signUpData validation check
-
-    // 먼저 어디서 들어왔는지 체크 (일반 로그인? 카카오 로그인?)
     const bodyData = JSON.parse(JSON.stringify(signUpData));
-    const id = bodyData.userId;
     const data = bodyData.data;
+    const photo = data.profileImage === undefined ? file : data.profileImage;
 
-    const signUpUser =
-      id === undefined
-        ? await this.userService.createGeneralUser(data)
-        : await this.userService.updateSignUpData(id, data);
+    let signUpUser;
 
-    if (!signUpData) {
-      //TODO: Database error handling
+    if (bodyData.userId === undefined) {
+      signUpUser = await this.userService.createGeneralUser(data);
+      if (photo !== undefined)
+        await this.photoService.createUserPhoto(signUpUser.id, photo);
+    } else {
+      const id = parseInt(bodyData.userId);
+      signUpUser = await this.userService.updateSignUpData(id, data);
+      await this.photoService.createUserPhoto(signUpUser.id, photo);
     }
 
     const token = signJwtToken(signUpUser.id, signUpUser.email);
