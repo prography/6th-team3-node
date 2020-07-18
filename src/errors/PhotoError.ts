@@ -20,12 +20,25 @@ export class NotSupportedTypeError extends BadRequestError {
 export class UploadImageError extends InternalServerError {
   constructor() {
     super('Upload Image Error');
-    Object.setPrototypeOf(this, NotSupportedTypeError.prototype);
+    Object.setPrototypeOf(this, UploadImageError.prototype);
   }
   public toJSON(): ErrorResponse {
     return {
       error: this.message,
       message: 'Error occured during upload image file on server',
+    };
+  }
+}
+
+export class ImageSizeError extends BadRequestError {
+  constructor() {
+    super('Image Size Error');
+    Object.setPrototypeOf(this, ImageSizeError.prototype);
+  }
+  public toJSON(): ErrorResponse {
+    return {
+      error: this.message,
+      message: 'Image too large, you can upload files up to 1MB',
     };
   }
 }

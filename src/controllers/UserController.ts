@@ -1,5 +1,6 @@
 import express from 'express';
 import { BaseController } from './BaseController';
+import { UploadImageError } from '../errors/PhotoError';
 import { UserNotFoundError } from '../errors/UserError';
 
 import jwtMiddleware, { signJwtToken, JwtUserData } from '../utils/AuthHelper';
@@ -101,6 +102,10 @@ export class UserController extends BaseController {
     @Body() signUpData: string,
     @UploadedFile('profileImage') file: PhotoUploadRequest
   ) {
+    if (file !== undefined && file.size > 1000000) {
+      throw new UploadImageError();
+    }
+
     // TODO: signUpData validation check
     const bodyData = JSON.parse(JSON.stringify(signUpData));
     const data = bodyData.data;
