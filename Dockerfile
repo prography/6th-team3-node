@@ -2,7 +2,7 @@ FROM node:12
 
 WORKDIR /usr/src/app
 
-#COPY . /app
+COPY . /app
 COPY package.json ./
 COPY yarn.lock ./
 
@@ -12,6 +12,6 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["yarn", "start:prod"]
-#RUN yarn build
+ENV NODE_ENV production
 
+CMD ["yarn", "start:prod"]
