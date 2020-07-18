@@ -88,13 +88,13 @@ export class PetController extends BaseController {
     const userInfo: JwtUserData = request.user;
 
     const petInfo = [];
-    const petNames = new Set();
+    const petNames: string[] = [];
+
+    petData.forEach(d => petNames.push(d.petName));
+    if (new Set(petNames).size !== petNames.length)
+      throw new DuplicatedPetNameError();
 
     for (const idx in petData) {
-      const prevSize = petNames.size;
-      petNames.add(petData[idx].petName);
-      if (prevSize === petNames.size) throw new DuplicatedPetNameError();
-
       const newPet = await this.petService.createUserPet(
         userInfo.id,
         petData[idx]
@@ -103,8 +103,6 @@ export class PetController extends BaseController {
         newPet.id,
         files[idx]
       );
-
-      petNames.add(newPet.name);
 
       const info = { ...newPet, ...petPhoto };
       petInfo.push(info);
