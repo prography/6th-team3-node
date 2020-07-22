@@ -89,7 +89,7 @@ export class UserController extends BaseController {
     const response: UserData = {
       id: userData.id,
       name: userData.name!,
-      email: userData.email,
+      email: user.email,
       phoneNumber: userData.phoneNumber!,
       profileImage: profileImage!,
     };
