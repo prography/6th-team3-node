@@ -24,7 +24,7 @@ export class PetService extends BaseService {
         petName: info.name!,
         registerNumber: info.registerNum!,
         rfidCode: info.rfidCode!,
-        birthYear: info.year!.toString(),
+        year: info.year!.toString(),
         breed: info.breed!,
         isNeutered: info.isNeutered!.toString(),
         gender: info.gender!,
@@ -45,7 +45,7 @@ export class PetService extends BaseService {
         breed: petData.breed,
         isNeutered: petData.isNeutered === 'true',
         gender: petData.gender as Gender,
-        year: parseInt(petData.birthYear),
+        year: parseInt(petData.year),
         owner: { connect: { id: userId } },
       },
     });

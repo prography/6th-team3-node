@@ -26,7 +26,7 @@ export interface PetData {
   petName: string;
   registerNumber: string;
   rfidCode: string;
-  birthYear: string;
+  year: string;
   breed: string;
   isNeutered: string;
   gender: string;
@@ -84,7 +84,10 @@ export class PetController extends BaseController {
     @Body() data: PetData[],
     @Req() request: express.Request
   ) {
+    console.log(89, JSON.parse(JSON.stringify(data)));
+
     const petData: PetData[] = JSON.parse(JSON.stringify(data))['data'];
+
     const userInfo: JwtUserData = request.user;
 
     const petInfo = [];
