@@ -42,6 +42,7 @@ export interface GeneralSignUpRequest {
 export interface UserData {
   id: number;
   name: string;
+  email: string;
   phoneNumber: string;
   profileImage: string;
 }
@@ -88,6 +89,7 @@ export class UserController extends BaseController {
     const response: UserData = {
       id: userData.id,
       name: userData.name!,
+      email: userData.email,
       phoneNumber: userData.phoneNumber!,
       profileImage: profileImage!,
     };
