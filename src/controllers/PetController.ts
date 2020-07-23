@@ -31,13 +31,12 @@ export interface PetData {
   isNeutered: string;
   gender: string;
   weight?: number;
-  photoUrl?: string;
 }
 
 export interface PetResponse {
   status: string;
   message: string;
-  data: any | any[];
+  data: any;
 }
 
 export interface PhotoUploadRequest {
@@ -80,41 +79,29 @@ export class PetController extends BaseController {
   @Post('/')
   @UseBefore(jwtMiddleware)
   public async createPetInfo(
-    @UploadedFiles('photo') files: PhotoUploadRequest[],
-    @Body() data: PetData[],
+    @UploadedFiles('petImage') images: PhotoUploadRequest[],
+    @Body() data: PetData,
     @Req() request: express.Request
   ) {
-    console.log(89, JSON.parse(JSON.stringify(data)));
-
-    const petData: PetData[] = JSON.parse(JSON.stringify(data))['data'];
+    const petData = JSON.parse(JSON.stringify(data))['data'];
 
     const userInfo: JwtUserData = request.user;
+    let info = {};
 
-    const petInfo = [];
-    const petNames: string[] = [];
-
-    petData.forEach(d => petNames.push(d.petName));
-    if (new Set(petNames).size !== petNames.length)
-      throw new DuplicatedPetNameError();
-
-    for (const idx in petData) {
-      const newPet = await this.petService.createUserPet(
-        userInfo.id,
-        petData[idx]
-      );
+    const newPet = await this.petService.createUserPet(userInfo.id, petData);
+    if (images[0] !== undefined) {
       const petPhoto = await this.photoService.createPetPhoto(
         newPet.id,
-        files[idx]
+        images[0]
       );
-
-      const info = { ...newPet, ...petPhoto };
-      petInfo.push(info);
+      info = { ...petPhoto };
     }
+    info = { ...newPet };
 
     const response: PetResponse = {
       status: 'success',
       message: 'Succeed in creating pet information',
-      data: petInfo,
+      data: info,
     };
 
     return response;
