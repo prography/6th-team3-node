@@ -2,7 +2,7 @@
 import { BaseService } from './BaseService';
 import { PrismaClient } from '@prisma/client';
 import { PetData } from '../controllers/PetController';
-import { PetRegisterData } from '../providers/PetProvider';
+import { DuplicatedPetNameError } from '../errors/PetError';
 
 type Gender = 'MALE' | 'FEMAIL';
 
@@ -36,6 +36,12 @@ export class PetService extends BaseService {
   }
 
   public async createUserPet(userId: number, petData: PetData) {
+    const duplicated = await this.databaseClient.pet.findMany({
+      where: { userId },
+    });
+    for (const pet of duplicated) {
+      if (pet.name === petData.petName) throw new DuplicatedPetNameError();
+    }
     petData.gender = petData.gender === '수컷' ? 'MALE' : 'FEMAIL';
     const result = await this.databaseClient.pet.create({
       data: {
