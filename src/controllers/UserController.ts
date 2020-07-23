@@ -86,7 +86,6 @@ export class UserController extends BaseController {
     const photoData = await this.photoService.getUserPhoto(userData.id);
     const profileImage = !photoData ? 'empty' : photoData.url;
 
-    /*
     const response: UserData = {
       id: userData.id,
       name: userData.name!,
@@ -94,9 +93,8 @@ export class UserController extends BaseController {
       phoneNumber: userData.phoneNumber!,
       profileImage: profileImage!,
     };
-    */
 
-    return { data: 'hello!!' };
+    return response;
   }
 
   //TODO: 닉네임 중복확인
