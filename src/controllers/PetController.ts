@@ -84,11 +84,12 @@ export class PetController extends BaseController {
     @Req() request: express.Request
   ) {
     const petData = JSON.parse(JSON.stringify(data))['data'];
-
+    console.log(87, images);
     const userInfo: JwtUserData = request.user;
     let info = {};
 
     const newPet = await this.petService.createUserPet(userInfo.id, petData);
+    if (newPet === undefined) throw new DuplicatedPetNameError();
     if (images[0] !== undefined) {
       const petPhoto = await this.photoService.createPetPhoto(
         newPet.id,
@@ -96,7 +97,7 @@ export class PetController extends BaseController {
       );
       info = { ...petPhoto };
     }
-    info = { ...newPet };
+    info = { ...newPet, ...info };
 
     const response: PetResponse = {
       status: 'success',

@@ -40,7 +40,7 @@ export class PetService extends BaseService {
       where: { userId },
     });
     for (const pet of duplicated) {
-      if (pet.name === petData.petName) throw new DuplicatedPetNameError();
+      if (pet.name === petData.petName) return;
     }
     petData.gender = petData.gender === '수컷' ? 'MALE' : 'FEMAIL';
     const result = await this.databaseClient.pet.create({
