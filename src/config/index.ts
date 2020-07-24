@@ -30,8 +30,18 @@ const config = {
   logger: {
     level: process.env.LOG_LEVEL || 'silly',
   },
-  api: {
-    prefix: '/api',
+  auth: {
+    kakao: {
+      restApiKey: process.env.KAKAO_REST_API_KEY,
+      clientId: process.env.KAKAO_CLIENT_ID,
+      redirect: process.env.KAKAO_REDIRECT,
+    },
+    jwt: process.env.JWT_SECRET_KEY || 'secret',
+    openApi: process.env.OPEN_API_KEY,
+    aws: {
+      accessKey: process.env.AWS_ACCESS_KEY,
+      secretKey: process.env.AWS_SECRET_KEY,
+    },
   },
 };
 

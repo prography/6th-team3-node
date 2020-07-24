@@ -1,10 +1,12 @@
 import express from 'express';
-import config from './config';
+import bodyParser from 'body-parser';
 import { useExpressServer } from 'routing-controllers';
 
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 useExpressServer(app, {
-  routePrefix: config.api.prefix,
+  cors: true,
   controllers: [`${__dirname}/controllers/**`],
 });
 
