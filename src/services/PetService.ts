@@ -36,6 +36,12 @@ export class PetService extends BaseService {
   }
 
   public async createUserPet(userId: number, petData: PetData) {
+    const duplicated = await this.databaseClient.pet.findMany({
+      where: { userId },
+    });
+    for (const pet of duplicated) {
+      if (pet.name === petData.petName) return;
+    }
     petData.gender = petData.gender === '수컷' ? 'MALE' : 'FEMAIL';
     const result = await this.databaseClient.pet.create({
       data: {
